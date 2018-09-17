@@ -33,6 +33,7 @@ module.exports = async (dest, publicPath, watch, extend) => {
         context: process.cwd(),
         watch: !global.inProduction,
         stats: {
+            moduleTrace: false,
             hash: false,
             builtAt: false,
             modules: false,
@@ -59,6 +60,7 @@ module.exports = async (dest, publicPath, watch, extend) => {
 
     base.module = {
         rules: [
+            require('./loaders/eslint'),
             require('./loaders/babel'),
             require('./loaders/css'),
             require('./loaders/editor-css'),
