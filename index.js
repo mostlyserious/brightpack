@@ -44,7 +44,7 @@ module.exports = async (dest, publicPath, watch, extend) => {
     };
 
     base.output = {
-        filename: global.inProduction ? 'js/[name].[chunkhash:7].js' : 'js/[name].js',
+        filename: global.inProduction ? 'js/[name].[contenthash:7].js' : 'js/[name].js',
         path: path.resolve(dest),
         publicPath: global.inProduction ? publicPath : `${process.env.APP_URL}:${process.env.HMR_PORT}/`,
         hotUpdateChunkFilename: 'hmr/[id].[hash].hot-update.js',
@@ -112,8 +112,8 @@ module.exports = async (dest, publicPath, watch, extend) => {
         base.mode = 'production';
         base.devtool = 'none';
 
-        base.output.chunkFilename = 'js/[name].[chunkhash:7].js';
-        base.output.sourceMapFilename = '[name].[chunkhash:7].map';
+        base.output.chunkFilename = 'js/[name].[contenthash:7].js';
+        base.output.sourceMapFilename = '[name].[contenthash:7].map';
 
         base.optimization = {
             splitChunks: {
@@ -123,8 +123,8 @@ module.exports = async (dest, publicPath, watch, extend) => {
         };
 
         base.plugins.push(new MiniCssExtractPlugin({
-            filename: 'css/[name].[chunkhash:7].css',
-            chunkFilename: 'css/[name].[chunkhash:7].css'
+            filename: 'css/[name].[contenthash:7].css',
+            chunkFilename: 'css/[name].[contenthash:7].css'
         }));
 
         base.plugins.push(new CssoWebpackPlugin());
