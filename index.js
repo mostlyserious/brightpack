@@ -148,9 +148,9 @@ function hmr(config, watch) {
         host: process.env.APP_HOST,
         port: process.env.HMR_PORT,
         https: (process.env.APP_URL.includes('https:')) ? {
-            key: fs.readFileSync(`${__home}/.valet/Certificates/${process.env.APP_HOST}.key`),
-            cert: fs.readFileSync(`${__home}/.valet/Certificates/${process.env.APP_HOST}.crt`),
-            ca: fs.readFileSync(`${__home}/.valet/CA/LaravelValetCASelfSigned.pem`)
+            key: fs.readFileSync(`${__home}/.config/valet/Certificates/${process.env.APP_HOST}.key`),
+            cert: fs.readFileSync(`${__home}/.config/valet/Certificates/${process.env.APP_HOST}.crt`),
+            ca: fs.readFileSync(`${__home}/.config/valet/CA/LaravelValetCASelfSigned.pem`)
         } : false,
         headers: {
             'Access-Control-Allow-Origin': '*'
