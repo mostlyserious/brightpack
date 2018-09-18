@@ -1,9 +1,7 @@
 const path = require('path');
 const cache = require('cache-loader/package.json');
-const moduleExists = require('../util/module-exists');
-const vue = moduleExists('vue')
-    ? require('vue/package.json')
-    : { version: 0 };
+const requireOptional = require('../util/require-optional');
+const vue = requireOptional('vue') || { version: 0 };
 
 module.exports = {
     test: /\.vue$/,

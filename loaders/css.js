@@ -1,5 +1,20 @@
+const fs = require('fs');
+const path = require('path');
 const autoprefixer = require('autoprefixer');
+const requireOptional = require('../util/require-optional');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const tailwindConfig = path.resolve(process.cwd(), 'tailwind.js');
+const tailwindcss = requireOptional('tailwindcss');
+
+const plugins = [
+    tailwindcss && fs.existsSync(tailwindConfig)
+        ? tailwindcss(tailwindConfig)
+        : null,
+    global.inProduction ? autoprefixer({
+        flexbox: 'no-2009',
+        grid: true
+    }) : null
+].filter(Boolean);
 
 module.exports = {
     test: /\.css$/,
@@ -14,17 +29,11 @@ module.exports = {
                 sourceMap: false
             }
         },
-        global.inProduction ? {
+        plugins.length ? {
             loader: 'postcss-loader',
             options: {
-                sourceMap: false,
-                plugins: [
-                    autoprefixer({
-                        flexbox: 'no-2009',
-                        grid: true
-                    })
-                ]
+                plugins, sourceMap: false
             }
         } : null
-    ].filter(l => l)
+    ].filter(Boolean)
 };

@@ -1,8 +1,6 @@
 module.exports = function moduleExists(moduleName) {
     try {
-        require.resolve(moduleName);
-
-        return true;
+        return require(moduleName);
     } catch (e) {
         return false;
     }

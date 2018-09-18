@@ -3,7 +3,7 @@ let fs = require('fs'),
     dotenv = require('dotenv'),
     webpack = require('webpack'),
     chokidar = require('chokidar'),
-    moduleExists = require('./util/module-exists');
+    requireOptional = require('./util/require-optional');
 
 const WebpackDevServer = require('webpack-dev-server');
 const ManifestPlugin = require('webpack-manifest-plugin');
@@ -96,13 +96,13 @@ module.exports = async (dest, publicPath, watch, extend) => {
         })
     ];
 
-    if (moduleExists('moment')) {
+    if (requireOptional('moment')) {
         const MomentLocalesPlugin = require('moment-locales-webpack-plugin');
 
         base.plugins.push(new MomentLocalesPlugin());
     }
 
-    if (moduleExists('vue')) {
+    if (requireOptional('vue')) {
         const { VueLoaderPlugin } = require('vue-loader');
 
         base.plugins.push(new VueLoaderPlugin());
