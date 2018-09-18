@@ -12,11 +12,11 @@ module.exports = {
                 cache: path.resolve('.cache/eslint'),
                 formatter(results) {
                     return results.map((file, i) => {
-                        const relativePath = path.relative(process.cwd(), file.filePath);
+                        const basename = path.basename(file.filePath);
 
                         return file.messages.map(({ ruleId, message, line, column }, n) => [
-                            chalk.reset.magenta(`${n + 1}. ${relativePath}:${line}:${column}`),
-                            chalk.dim.blue(`${ruleId}: ${message}`)
+                            chalk.reset.magenta(`${n + 1}. ${basename}:${line}:${column}`),
+                            chalk.dim.blue(`${ruleId ? `${ruleId}: ` : ''}${message}`)
                         ].join(`\n`)).join(`\n`);
                     });
                 }
