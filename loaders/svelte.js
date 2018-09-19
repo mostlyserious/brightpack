@@ -10,6 +10,7 @@ module.exports = {
             options: {
                 dev: !global.inProduction,
                 hotReload: !global.inProduction,
+                emitCss: true,
                 store: true,
                 preprocess: {
                     style({ content, attributes }) {
