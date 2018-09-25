@@ -1,23 +1,25 @@
 ##### webpack.config.js
 
 ```js
-let path = require('path'),
-    glob = require('tiny-glob'),
-    extend = require('brightpack');
+const path = require('path');
+const glob = require('tiny-glob');
+const extend = require('brightpack');
 
 const dest = 'assets';
 const watch = ['theme/**/*', '*.php'];
 const publicPath = path.join('/wp-content/themes', path.basename(__dirname), dest, '/');
 
-module.exports = extend(dest, publicPath, watch, async config => {
+module.exports = extend({ dest, publicPath, watch }, async config => {
+    const assets = await glob('src/{img,favicon,font,media}/**.*');
+
     config.entry = {
         app: [
-            path.resolve('src/js/main'),
+            path.resolve('src/js/main.js'),
             path.resolve('src/sass/main.scss'),
-            ...(await glob('src/{img,favicon}/**.*')).map(f => path.resolve(f))
+            ...assets.map(path.resolve)
         ],
         dashboard: [
-            path.resolve('src/js/admin'),
+            path.resolve('src/js/admin.js'),
             path.resolve('src/sass/admin.scss')
         ],
         editor: path.resolve('src/js/editor.js'),
