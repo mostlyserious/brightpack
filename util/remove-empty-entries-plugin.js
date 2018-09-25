@@ -1,6 +1,6 @@
 const NAME = 'remove-empty-entries';
 
-module.exports = new class RemoveEmptyEntriesPlugin {
+module.exports = class RemoveEmptyEntriesPlugin {
     constructor(options) {
         this.apply = this.apply.bind(this);
         this.options = Object.assign({}, {
