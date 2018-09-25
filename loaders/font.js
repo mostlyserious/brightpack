@@ -5,7 +5,7 @@ module.exports = {
         {
             loader: 'file-loader',
             options: {
-                name: global.inProduction ? '[name].[hash:7].[ext]' : '[name].[ext]',
+                name: '[name].[ext]',
                 outputPath: 'font/'
             }
         }
