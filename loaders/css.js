@@ -1,12 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 const autoprefixer = require('autoprefixer');
+const postcssimport = require('postcss-import');
 const requireOptional = require('../util/require-optional');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const tailwindConfig = path.resolve(process.cwd(), 'tailwind.js');
 const tailwindcss = requireOptional('tailwindcss');
 
 const plugins = [
+    postcssimport(),
     tailwindcss && fs.existsSync(tailwindConfig)
         ? tailwindcss(tailwindConfig)
         : null,
