@@ -11,6 +11,7 @@ const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CssoWebpackPlugin = require('csso-webpack-plugin').default;
 const { NamedModulesPlugin, HotModuleReplacementPlugin } = webpack;
+const RemoveEmptyEntriesPlugin = require('./util/remove-empty-entries-plugin');
 
 try {
     (env => Object.keys(env).forEach(key => {
@@ -128,6 +129,8 @@ module.exports = async (dest, publicPath, watch, extend) => {
         }));
 
         base.plugins.push(new CssoWebpackPlugin());
+
+        base.plugins.push(new RemoveEmptyEntriesPlugin());
     } else {
         base.mode = 'development';
         base.devtool = 'cheap-module-eval-source-map';
@@ -136,6 +139,7 @@ module.exports = async (dest, publicPath, watch, extend) => {
         base.output.sourceMapFilename = '[name].map';
 
         base.plugins.push(new NamedModulesPlugin());
+
         base.plugins.push(new HotModuleReplacementPlugin());
     }
 
