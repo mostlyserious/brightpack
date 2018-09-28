@@ -26,9 +26,9 @@ module.exports = class RemoveEmptyEntriesPlugin {
                     } else if (chunk.entryModule.dependencies && chunk.entryModule.dependencies.length) {
                         const modulesWithResources = chunk.entryModule.dependencies
                             .map(dep => dep.module)
-                            .filter(m => m && m.resource);
+                            .filter(m => m && (m.resource || m.rootModule));
 
-                        resources = modulesWithResources.map(m => m.resource);
+                        resources = modulesWithResources.map(m => (m.resource || m.rootModule.resource));
                     }
 
                     if (resources) {
