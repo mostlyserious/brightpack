@@ -66,6 +66,8 @@ module.exports = async (config, extend) => {
 
     base.module = {
         rules: [
+            // VueLoaderPlugin gets all butt-hurt if vue-loader isn't above babel-loader
+            { test: /\.vue$/, loader: 'vue-loader' },
             require('./loaders/eslint'),
             require('./loaders/babel'),
             require('./loaders/css'),
