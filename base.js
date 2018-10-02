@@ -5,6 +5,7 @@ let fs = require('fs'),
     chokidar = require('chokidar'),
     requireOptional = require('./util/require-optional');
 
+const TerserPlugin = require('terser-webpack-plugin');
 const WebpackDevServer = require('webpack-dev-server');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
@@ -127,7 +128,13 @@ module.exports = async (config, extend) => {
             splitChunks: {
                 chunks: 'all',
                 minSize: 1024 * 10
-            }
+            },
+            minimizer: [
+                new TerserPlugin({
+                    parallel: true,
+                    cache: path.resolve('.cache/terser')
+                })
+            ]
         };
 
         base.plugins.push(new MiniCssExtractPlugin({
