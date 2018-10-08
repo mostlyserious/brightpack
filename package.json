@@ -1,6 +1,6 @@
 {
   "name": "brightpack",
-  "version": "2.5.0",
+  "version": "2.5.1",
   "description": "🔄 Reasonable Webpack config boilerplate with a little Wordpress flavor.",
   "repository": "corneliusio/brightpack",
   "license": "MIT",
@@ -35,6 +35,7 @@
     "eslint-plugin-html": "^4.0.3",
     "eslint-plugin-vue": "^4.4.0",
     "file-loader": "^2.0.0",
+    "less": "^3.8.1",
     "less-loader": "^4.1.0",
     "loader-utils": "^1.1.0",
     "mini-css-extract-plugin": "^0.4.0",
