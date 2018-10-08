@@ -75,6 +75,8 @@ module.exports = async (config, extend) => {
             require('./loaders/editor-css'),
             require('./loaders/sass'),
             require('./loaders/editor-sass'),
+            require('./loaders/less'),
+            require('./loaders/editor-less'),
             require('./loaders/image'),
             require('./loaders/media'),
             require('./loaders/favicon'),
