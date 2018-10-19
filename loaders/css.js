@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const autoprefixer = require('autoprefixer');
 const postcssimport = require('postcss-import');
+const postcssnested = require('postcss-nested');
 const requireOptional = require('../util/require-optional');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const tailwindConfig = path.resolve(process.cwd(), 'tailwind.js');
@@ -15,7 +16,8 @@ const plugins = [
     global.inProduction ? autoprefixer({
         flexbox: 'no-2009',
         grid: true
-    }) : null
+    }) : null,
+    postcssnested()
 ].filter(Boolean);
 
 module.exports = {
