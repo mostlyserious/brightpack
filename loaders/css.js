@@ -1,15 +1,16 @@
 const fs = require('fs');
 const path = require('path');
 const autoprefixer = require('autoprefixer');
-const postcssimport = require('postcss-import');
-const postcssnested = require('postcss-nested');
+const postcssImport = require('postcss-import');
+const postcssNested = require('postcss-nested');
 const requireOptional = require('../util/require-optional');
+const postcssColorFunction = require('postcss-color-function');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const tailwindConfig = path.resolve(process.cwd(), 'tailwind.js');
 const tailwindcss = requireOptional('tailwindcss');
 
 const plugins = [
-    postcssimport(),
+    postcssImport(),
     tailwindcss && fs.existsSync(tailwindConfig)
         ? tailwindcss(tailwindConfig)
         : null,
@@ -17,7 +18,8 @@ const plugins = [
         flexbox: 'no-2009',
         grid: true
     }) : null,
-    postcssnested()
+    postcssNested(),
+    postcssColorFunction()
 ].filter(Boolean);
 
 module.exports = {
