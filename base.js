@@ -30,7 +30,9 @@ global.inProduction = process.env.NODE_ENV === 'production';
 
 module.exports = async (config, extend) => {
 
-    let { dest, publicPath, watch, filename } = config;
+    let { dest, publicPath, watch, filename, sass } = config;
+
+    global.sass = sass || 'node-sass';
 
     publicPath = publicPath || `/${dest}/`;
     filename = filename || '[name].[contenthash:7]';

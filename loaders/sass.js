@@ -8,7 +8,11 @@ module.exports = {
         ...css.use,
         {
             loader: 'sass-loader',
-            options: { ...config, sourceMap: false }
+            options: {
+                ...config,
+                sourceMap: false,
+                implementation: require(global.sass)
+            }
         }
     ]
 };

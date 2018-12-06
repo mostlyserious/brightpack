@@ -1,6 +1,8 @@
-let { resolve, join } = require('path');
+const Fiber = require('fibers');
+const { resolve, join } = require('path');
 
 module.exports = {
+    fiber: global.sass === 'sass' ? Fiber : undefined,
     precision: 3,
     includePaths: [
         resolve('node_modules')

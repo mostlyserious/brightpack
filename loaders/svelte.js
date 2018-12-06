@@ -1,4 +1,4 @@
-const sass = require('node-sass');
+const sass = require(global.sass);
 const config = require('../sass.config');
 
 module.exports = {
@@ -15,7 +15,11 @@ module.exports = {
                 preprocess: {
                     style({ content, attributes }) {
                         if (attributes.type === 'text/scss') {
-                            let result = sass.renderSync({ ...config, data: content, sourceMap: false });
+                            let result = sass.renderSync({
+                                ...config,
+                                data: content,
+                                sourceMap: false
+                            });
 
                             return {
                                 code: result.css,
