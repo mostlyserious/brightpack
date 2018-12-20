@@ -133,6 +133,13 @@ module.exports = async (config, extend) => {
                 chunks: 'all',
                 minSize: 1024 * 10
             },
+            cacheGroups: {
+                polyfills: {
+                    test: /[\\/]core-js[\\/]/,
+                    name: 'polyfills',
+                    chunks: 'all'
+                }
+            },
             minimizer: [
                 new TerserPlugin({
                     parallel: true,

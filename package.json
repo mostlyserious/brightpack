@@ -1,6 +1,6 @@
 {
   "name": "brightpack",
-  "version": "2.8.0",
+  "version": "2.9.0",
   "description": "🔄 Reasonable Webpack config boilerplate with a little Wordpress flavor.",
   "repository": "corneliusio/brightpack",
   "license": "MIT",
@@ -27,6 +27,7 @@
     "chokidar": "^2.0.3",
     "clean-webpack-plugin": "^1.0.0",
     "cli-table2": "^0.2.0",
+    "core-js": "^2.6.1",
     "css-loader": "^1.0.0",
     "csso-webpack-plugin": "^1.0.0-beta",
     "dotenv": "^6.0.0",
