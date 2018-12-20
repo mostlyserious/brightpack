@@ -133,7 +133,6 @@ module.exports = async (config, extend) => {
                 cacheGroups: {
                     polyfills: {
                         test: /[\\/]core-js[\\/]/,
-                        name: 'polyfills',
                         chunks: 'all'
                     }
                 }
