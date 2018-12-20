@@ -69,9 +69,8 @@ module.exports = async (config, extend) => {
 
     base.module = {
         rules: [
-            // VueLoaderPlugin gets all butt-hurt if vue-loader isn't above babel-loader
-            { test: /\.vue$/, loader: 'vue-loader' },
             require('./loaders/eslint'),
+            require('./loaders/vue'),
             require('./loaders/babel'),
             require('./loaders/css'),
             require('./loaders/editor-css'),
@@ -86,7 +85,6 @@ module.exports = async (config, extend) => {
             require('./loaders/svgo'),
             require('./loaders/font'),
             require('./loaders/svelte'),
-            require('./loaders/vue'),
             require('./loaders/raw')
         ]
     };
@@ -131,13 +129,13 @@ module.exports = async (config, extend) => {
         base.optimization = {
             splitChunks: {
                 chunks: 'all',
-                minSize: 1024 * 10
-            },
-            cacheGroups: {
-                polyfills: {
-                    test: /[\\/]core-js[\\/]/,
-                    name: 'polyfills',
-                    chunks: 'all'
+                minSize: 1024 * 10,
+                cacheGroups: {
+                    polyfills: {
+                        test: /[\\/]core-js[\\/]/,
+                        name: 'polyfills',
+                        chunks: 'all'
+                    }
                 }
             },
             minimizer: [
