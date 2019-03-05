@@ -91,10 +91,7 @@ module.exports = async (config, extend) => {
     };
 
     base.plugins = [
-        new CleanWebpackPlugin(dest, {
-            root: process.cwd(),
-            verbose: false
-        }),
+        new CleanWebpackPlugin({ verbose: false }),
         new ManifestPlugin({
             fileName: 'entries.json',
             writeToFileEmit: true,
