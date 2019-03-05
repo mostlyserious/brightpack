@@ -3,6 +3,7 @@ let fs = require('fs'),
     dotenv = require('dotenv'),
     webpack = require('webpack'),
     chokidar = require('chokidar'),
+    { cloneDeep } = require('lodash'),
     requireOptional = require('./util/require-optional');
 
 const TerserPlugin = require('terser-webpack-plugin');
@@ -23,16 +24,16 @@ try {
 }
 
 process.env.NODE_ENV = process.env.NODE_ENV || 'development';
-process.env.HMR_PORT = process.env.HMR_PORT || 8888;
 process.env.APP_HOST = process.env.APP_HOST || 'localhost';
 process.env.APP_URL = process.env.APP_URL || `http://${process.env.APP_HOST}`;
 global.inProduction = process.env.NODE_ENV === 'production';
 
 module.exports = async (config, extend) => {
 
-    let { dest, publicPath, watch, filename, sass } = config;
+    let { dest, publicPath, watch, filename, port, sass } = config;
 
     global.sass = sass || 'node-sass';
+    port = port || 8888;
 
     publicPath = publicPath || `/${dest}/`;
     filename = filename || '[name].[contenthash:7]';
@@ -55,7 +56,7 @@ module.exports = async (config, extend) => {
     base.output = {
         filename: global.inProduction ? `js/${filename}.js` : 'js/[name].js',
         path: path.resolve(dest),
-        publicPath: global.inProduction ? publicPath : `${process.env.APP_URL}:${process.env.HMR_PORT}/`,
+        publicPath: global.inProduction ? publicPath : `${process.env.APP_URL}:${port}/`,
         hotUpdateChunkFilename: 'hmr/[id].[hash].hot-update.js',
         hotUpdateMainFilename: 'hmr/[hash].hot-update.json'
     };
@@ -165,14 +166,16 @@ module.exports = async (config, extend) => {
         base.plugins.push(new HotModuleReplacementPlugin());
     }
 
-    return global.inProduction ? await extend(base) : hmr(await extend(base), watch);
+    const instance = await extend(cloneDeep(base));
+
+    return global.inProduction ? instance : hmr(instance, watch, port);
 };
 
-function hmr(config, watch) {
+function hmr(config, watch, port) {
     const __home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
     const options = {
+        port,
         host: process.env.APP_HOST,
-        port: process.env.HMR_PORT,
         https: (process.env.APP_URL.includes('https:')) ? {
             key: fs.readFileSync(`${__home}/.config/valet/Certificates/${process.env.APP_HOST}.key`),
             cert: fs.readFileSync(`${__home}/.config/valet/Certificates/${process.env.APP_HOST}.crt`),
@@ -196,8 +199,8 @@ function hmr(config, watch) {
     const compiler = webpack(config);
     const server = new WebpackDevServer(compiler, options);
 
-    server.listen(process.env.HMR_PORT, process.env.APP_HOST, () => {
-        console.log(`webpack-dev-server listening on port ${process.env.HMR_PORT}`);
+    server.listen(port, process.env.APP_HOST, () => {
+        console.log(`webpack-dev-server listening on port ${port}`);
 
         const usePolling = server.watchOptions.poll
             ? true
