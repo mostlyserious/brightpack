@@ -18,7 +18,7 @@ const RemoveEmptyEntriesPlugin = require('./util/remove-empty-entries-plugin');
 try {
     (env => Object.keys(env).forEach(key => {
         process.env[key] = env[key].replace(/\$\{(.+)\}/gi, (original, a) => env[a]);
-    }))(dotenv.load({ silent: true }).parsed);
+    }))(dotenv.config().parsed);
 } catch (error) {
     console.warn('No .env file');
 }
