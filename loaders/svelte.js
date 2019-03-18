@@ -1,9 +1,7 @@
-const sass = require(global.sass);
-const config = require('../sass.config');
 const plugins = require('../postcss.plugins');
 const postcss = require('postcss');
 
-module.exports = {
+module.exports = config => ({
     test: /\.(svelte|svlt)(\.html)?$/,
     exclude: /node_modules/,
     use: [
@@ -27,8 +25,10 @@ module.exports = {
                                 map: result.map
                             };
                         } else if (attributes.type === 'text/scss') {
+                            const sass = require(config.sass);
+                            const sassConfig = require('../sass.config')(config);
                             const result = await sass.render({
-                                ...config,
+                                ...sassConfig,
                                 data: content,
                                 sourceMap: false
                             });
@@ -45,4 +45,4 @@ module.exports = {
             }
         }
     ]
-};
+});

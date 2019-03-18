@@ -1,13 +1,13 @@
-module.exports = {
+module.exports = config => ({
     test: /\.(png|xml|ico|svg|webmanifest)$/,
     include: /\/favicons?\//,
     use: [
         {
             loader: 'file-loader',
             options: {
-                name: '[name].[ext]',
+                name: global.inProduction ? `${config.filename}.[ext]` : '[name].[ext]',
                 outputPath: 'favicon/'
             }
         }
     ]
-};
+});

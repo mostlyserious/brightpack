@@ -1,13 +1,17 @@
 const css = require('./css');
 
-module.exports = {
-    test: /\.less$/,
-    exclude: /editor\.less$/,
-    use: [
-        ...css.use,
-        {
-            loader: 'less-loader',
-            options: { sourceMap: false }
-        }
-    ]
+module.exports = config => {
+    const use = css(config).use;
+
+    return {
+        test: /\.less$/,
+        exclude: /editor\.less$/,
+        use: [
+            ...use,
+            {
+                loader: 'less-loader',
+                options: { sourceMap: false }
+            }
+        ]
+    };
 };

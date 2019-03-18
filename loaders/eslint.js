@@ -1,7 +1,7 @@
 const path = require('path');
 const chalk = require('chalk');
 
-module.exports = {
+module.exports = config => ({
     enforce: 'pre',
     test: /\.([tj]sx?|svelte|svlt|vue)$/,
     exclude: /node_modules/,
@@ -23,4 +23,4 @@ module.exports = {
             }
         }
     ]
-};
+});

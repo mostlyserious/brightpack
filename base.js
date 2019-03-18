@@ -30,13 +30,10 @@ global.inProduction = process.env.NODE_ENV === 'production';
 
 module.exports = async (config, extend) => {
 
-    let { dest, publicPath, watch, filename, port, sass } = config;
-
-    global.sass = sass || 'node-sass';
-    port = port || 8888;
-
-    publicPath = publicPath || `/${dest}/`;
-    filename = filename || '[name].[contenthash:7]';
+    config.sass = config.sass || 'node-sass';
+    config.port = config.port || 8888;
+    config.publicPath = config.publicPath || `/${config.dest}/`;
+    config.filename = config.filename || '[name].[contenthash:7]';
 
     const base = {
         target: 'web',
@@ -54,9 +51,9 @@ module.exports = async (config, extend) => {
     };
 
     base.output = {
-        filename: global.inProduction ? `js/${filename}.js` : 'js/[name].js',
-        path: path.resolve(dest),
-        publicPath: global.inProduction ? publicPath : `${process.env.APP_URL}:${port}/`,
+        filename: global.inProduction ? `js/${config.filename}.js` : 'js/[name].js',
+        path: path.resolve(config.dest),
+        publicPath: global.inProduction ? config.publicPath : `${process.env.APP_URL}:${config.port}/`,
         hotUpdateChunkFilename: 'hmr/[id].[hash].hot-update.js',
         hotUpdateMainFilename: 'hmr/[hash].hot-update.json'
     };
@@ -70,36 +67,37 @@ module.exports = async (config, extend) => {
 
     base.module = {
         rules: [
-            require('./loaders/eslint'),
-            require('./loaders/vue'),
-            require('./loaders/babel'),
-            require('./loaders/css'),
-            require('./loaders/editor-css'),
-            require('./loaders/sass'),
-            require('./loaders/editor-sass'),
-            require('./loaders/less'),
-            require('./loaders/editor-less'),
-            require('./loaders/image'),
-            require('./loaders/media'),
-            require('./loaders/favicon'),
-            require('./loaders/tinypng'),
-            require('./loaders/svgo'),
-            require('./loaders/font'),
-            require('./loaders/svelte'),
-            require('./loaders/raw')
+            require('./loaders/eslint')(config),
+            require('./loaders/vue')(config),
+            require('./loaders/babel')(config),
+            require('./loaders/css')(config),
+            require('./loaders/editor-css')(config),
+            require('./loaders/sass')(config),
+            require('./loaders/editor-sass')(config),
+            require('./loaders/less')(config),
+            require('./loaders/editor-less')(config),
+            require('./loaders/image')(config),
+            require('./loaders/media')(config),
+            require('./loaders/favicon')(config),
+            require('./loaders/tinypng')(config),
+            require('./loaders/svgo')(config),
+            require('./loaders/font')(config),
+            require('./loaders/svelte')(config),
+            require('./loaders/raw')(config)
         ]
     };
 
     base.plugins = [
         new CleanWebpackPlugin({ verbose: false }),
         new ManifestPlugin({
-            fileName: 'entries.json',
+            fileName: 'manifest.json',
             writeToFileEmit: true,
             generate(seed, files) {
                 return files.reduce((manifest, file) => {
-                    return (file.isInitial && !file.name.includes('.map'))
-                        ? { ...manifest, [file.name]: file.path }
-                        : manifest;
+                    const extension = path.extname(file.name).replace('.', '');
+                    const filename = file.isAsset ? file.name : `${extension}/${file.name}`;
+
+                    return { ...manifest, [filename]: file.path };
                 }, seed);
             }
         })
@@ -121,8 +119,8 @@ module.exports = async (config, extend) => {
         base.mode = 'production';
         base.devtool = 'none';
 
-        base.output.chunkFilename = `js/${filename}.js`;
-        base.output.sourceMapFilename = `${filename}.map`;
+        base.output.chunkFilename = `js/${config.filename}.js`;
+        base.output.sourceMapFilename = `${config.filename}.map`;
 
         base.optimization = {
             splitChunks: {
@@ -144,8 +142,8 @@ module.exports = async (config, extend) => {
         };
 
         base.plugins.push(new MiniCssExtractPlugin({
-            filename: `css/${filename}.css`,
-            chunkFilename: `css/${filename}.css`
+            filename: `css/${config.filename}.css`,
+            chunkFilename: `css/${config.filename}.css`
         }));
 
         base.plugins.push(new CssoWebpackPlugin());
@@ -165,7 +163,7 @@ module.exports = async (config, extend) => {
 
     const instance = await extend(cloneDeep(base));
 
-    return global.inProduction ? instance : hmr(instance, watch, port);
+    return global.inProduction ? instance : hmr(instance, config.watch, config.port);
 };
 
 function hmr(config, watch, port) {

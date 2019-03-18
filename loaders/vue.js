@@ -3,7 +3,7 @@ const cache = require('cache-loader/package.json');
 const requireOptional = require('../util/require-optional');
 const vue = requireOptional('vue') || { version: 0 };
 
-module.exports = {
+module.exports = config => ({
     test: /\.vue$/,
     use: [
         {
@@ -14,4 +14,4 @@ module.exports = {
             } : {}
         }
     ]
-};
+});

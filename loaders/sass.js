@@ -1,18 +1,22 @@
 const css = require('./css');
-const config = require('../sass.config');
 
-module.exports = {
-    test: /\.s[ac]ss$/,
-    exclude: /editor\.scss$/,
-    use: [
-        ...css.use,
-        {
-            loader: 'sass-loader',
-            options: {
-                ...config,
-                sourceMap: false,
-                implementation: require(global.sass)
+module.exports = config => {
+    const use = css(config).use;
+    const sass = require('../sass.config')(config);
+
+    return {
+        test: /\.s[ac]ss$/,
+        exclude: /editor\.s[ac]ss$/,
+        use: [
+            ...use,
+            {
+                loader: 'sass-loader',
+                options: {
+                    ...sass,
+                    sourceMap: false,
+                    implementation: require(config.sass)
+                }
             }
-        }
-    ]
+        ]
+    };
 };

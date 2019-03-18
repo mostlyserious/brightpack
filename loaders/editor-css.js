@@ -1,15 +1,18 @@
 const css = require('./css');
-const use = [...css.use];
 
-use[0] = {
-    loader: 'style-loader',
-    options: {
-        insertInto: function() {
-            const iframe = document.querySelector('#content_ifr');
+module.exports = config => {
+    const use = [...css(config).use];
 
-            return (iframe.contentDocument ? iframe.contentDocument : iframe.contentWindow.document).head;
+    use[0] = {
+        loader: 'style-loader',
+        options: {
+            insertInto: function() {
+                const iframe = document.querySelector('#content_ifr');
+
+                return (iframe.contentDocument ? iframe.contentDocument : iframe.contentWindow.document).head;
+            }
         }
-    }
-};
+    };
 
-module.exports = { test: /editor\.css$/, use };
+    return { test: /editor\.css$/, use };
+};

@@ -4,7 +4,7 @@ const browserslist = require('browserslist');
 const loader = require('babel-loader/package.json');
 const json = JSON.stringify;
 
-module.exports = {
+module.exports = config => ({
     test: /\.([tj]sx?|svelte|svlt)$/,
     use: [
         {
@@ -15,4 +15,4 @@ module.exports = {
             }
         }
     ]
-};
+});
