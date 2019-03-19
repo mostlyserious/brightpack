@@ -1,17 +1,17 @@
 const path = require('path');
 const cache = require('cache-loader/package.json');
-const requireOptional = require('../util/require-optional');
+const requireOptional = require('../lib/require-optional');
 const vue = requireOptional('vue') || { version: 0 };
 
-module.exports = config => ({
+module.exports = {
     test: /\.vue$/,
     use: [
         {
             loader: 'vue-loader',
-            options: global.inProduction ? {
+            options: {
                 cacheDirectory: path.resolve('.cache/vue'),
-                cacheIdentifier: `cache-loader:${cache.version} vue:${vue.version} ${process.env.NODE_ENV}`
-            } : {}
+                cacheIdentifier: `cache-loader:${cache.version} vue:${vue.version}`
+            }
         }
     ]
-});
+};

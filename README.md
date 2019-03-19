@@ -2,15 +2,15 @@
 
 ```js
 const path = require('path');
-const glob = require('tiny-glob');
-const extend = require('brightpack');
+const glob = require('tiny-glob/sync');
+const brightpack = require('brightpack');
 
 const dest = 'assets';
 const watch = ['theme/**/*', '*.php'];
 const publicPath = path.join('/wp-content/themes', path.basename(__dirname), dest, '/');
 
-module.exports = extend({ dest, publicPath, watch }, async config => {
-    const assets = await glob('src/{img,favicon,font,media}/**.*');
+module.exports = brightpack({ dest, publicPath, watch }, config => {
+    const assets = glob('src/{img,favicon,font,media}/**.*');
 
     config.entry = {
         app: [

@@ -1,4 +1,4 @@
-module.exports = config => ({
+module.exports = {
     test: /\.(png|jpe?g)$/,
     use: ['tinify-loader']
-});
+};

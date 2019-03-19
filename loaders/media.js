@@ -1,4 +1,4 @@
-module.exports = config => ({
+module.exports = {
     test: /\/media\//,
     use: [
         {
@@ -9,4 +9,4 @@ module.exports = config => ({
             }
         }
     ]
-});
+};

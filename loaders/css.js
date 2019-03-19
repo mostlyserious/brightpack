@@ -1,7 +1,7 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const plugins = require('../postcss.plugins');
 
-module.exports = config => ({
+module.exports = {
     test: /\.css$/,
     exclude: /editor\.css$/,
     use: [
@@ -21,4 +21,4 @@ module.exports = config => ({
             }
         } : null
     ].filter(Boolean)
-});
+};

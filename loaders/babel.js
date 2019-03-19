@@ -4,15 +4,16 @@ const browserslist = require('browserslist');
 const loader = require('babel-loader/package.json');
 const json = JSON.stringify;
 
-module.exports = config => ({
+module.exports = {
     test: /\.([tj]sx?|svelte|svlt)$/,
+    exclude: /node_modules\/core-js/,
     use: [
         {
             loader: 'babel-loader',
             options: {
                 cacheDirectory: path.resolve('.cache/js'),
-                cacheIdentifier: babel.version + loader.version + json(babel.loadOptions()) + json(browserslist.findConfig(process.cwd()))
+                cacheIdentifier: babel.version + loader.version + json(babel.loadOptions()) + json(browserslist())
             }
         }
     ]
-});
+};

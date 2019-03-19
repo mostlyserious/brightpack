@@ -1,8 +1,6 @@
-const Fiber = require('fibers');
 const { resolve, join } = require('path');
 
-module.exports = config => ({
-    fiber: config.sass === 'sass' ? Fiber : undefined,
+module.exports = {
     precision: 3,
     includePaths: [
         resolve('node_modules')
@@ -12,4 +10,4 @@ module.exports = config => ({
             file: file.replace(/^@(.+)/, (original, filepath) => join('src', filepath))
         };
     }
-});
+};
