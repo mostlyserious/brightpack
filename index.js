@@ -2,7 +2,6 @@ const path = require('path');
 const dotenv = require('dotenv');
 const hmr = require('./lib/hmr');
 const webpack = require('webpack');
-const { cloneDeep } = require('lodash');
 const editLoader = require('./util/edit-loader');
 const removePlugin = require('./util/remove-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -172,9 +171,7 @@ module.exports = (args, extend) => {
             base.plugins.push(new HotModuleReplacementPlugin());
         }
 
-        const instance = extend(cloneDeep(base));
-
-        return global.inProduction ? instance : hmr(instance, args);
+        return global.inProduction ? extend(base) : hmr(extend(base), args);
     };
 };
 
