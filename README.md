@@ -37,14 +37,14 @@ module.exports = brightpack({ dest, publicPath, watch }, config => {
 ##### helpers.php
 
 ```php
-if (!function_exists('asset')) {
-    function asset($entry, $markup = false, $manifest = 'assets/manifest.json')
+if (!function_exists('assets')) {
+    function assets($entries = null, $markup = false, $manifest = 'assets/manifest.json')
     {
         static $all;
 
-        $entries = [];
+        $results = [];
         $found_css = [];
-        $manifest_path = join_path(__DIR__, $manifest);
+        $manifest_path = join_path(ROOT_DIR, $manifest);
 
         if (!is_file($manifest_path)) {
             return $markup ? '' : [];
@@ -52,58 +52,84 @@ if (!function_exists('asset')) {
 
         $all = $all ?: json_decode(file_get_contents($manifest_path), true);
 
-        $type = pathinfo($entry, PATHINFO_DIRNAME);
-        $basename = pathinfo($entry, PATHINFO_FILENAME);
-        $ext = pathinfo($entry, PATHINFO_EXTENSION);
+        if (!$entries) {
+            return $all;
+        }
 
-        foreach ($all as $key => $value) {
-            if ($key === $entry || preg_match("/^$type\/.*~$basename.*\.$ext$/", $key)) {
-                $id = sanitize_title(str_replace('~', '-', implode(' ', [
-                    pathinfo($key, PATHINFO_FILENAME),
-                    pathinfo($key, PATHINFO_EXTENSION)
-                ])));
+        if (is_array($entries)) {
+            $type = null;
+        } else {
+            $type = pathinfo($entries, PATHINFO_DIRNAME);
+            $entries = [$entries];
+        }
 
-                switch ($type) {
-                    case 'js' :
-                        $resolved = $markup ? sprintf(
-                            '<script src="%s" %s async defer></script>',
-                            $value,
-                            is_array($markup) ? attr($markup) : ''
-                        ) : $value;
-                        break;
+        foreach ($entries as $entry) {
+            $basename = pathinfo($entry, PATHINFO_FILENAME);
+            $ext = pathinfo($entry, PATHINFO_EXTENSION);
 
-                    case 'css' :
-                        $resolved = $markup ? sprintf(
-                            '<link href="%s" rel="stylesheet" %s>',
-                            $value,
-                            is_array($markup)
-                                ? attr(array_merge($markup, isset($markup['onload']) ? [] : [
-                                    'media' => 'bogus',
-                                    'onload' => sprintf('this.media = \'%s\';', isset($markup['media']) ? $markup['media'] : 'all')
-                                ]))
-                                : 'media="bogus" onload="this.media = \'all\';"'
-                        ) : $value;
-                        break;
-                    default :
-                        return $value;
+            foreach ($all as $key => $value) {
+                if ($key === $entry || preg_match("/^$type\/.*~$basename.*\.$ext$/", $key)) {
+                    switch ($type) {
+                        case 'js' :
+                            $result = $markup ? sprintf(
+                                '<script src="%s" %s async defer></script>',
+                                $value,
+                                is_array($markup) ? attr($markup) : ''
+                            ) : $value;
+                            break;
+
+                        case 'css' :
+                            $result = $markup ? sprintf(
+                                '<link href="%s" rel="stylesheet" %s>',
+                                $value,
+                                is_array($markup) ? attr($markup) : ''
+                            ) : $value;
+                            break;
+                        default :
+                            if (count($entries) === 1) {
+                                return $value;
+                            }
+
+                            $result = $value;
+                            break;
+                    }
+
+                    $id = sanitize_title(str_replace('~', '-', implode(' ', [
+                        pathinfo($key, PATHINFO_FILENAME),
+                        pathinfo($key, PATHINFO_EXTENSION)
+                    ])));
+
+                    $results[$id] = $result;
                 }
-
-                $entries[$id] = $resolved;
             }
         }
 
-        return ($markup || !in_array($type, ['css', 'js']))
-            ? implode("\n", $entries)
-            : $entries;
+        return $markup ? implode("\n", $results) . "\n" : $results;
     }
 }
 
-if (!function_exists('join_path')) {
-    function join_path(...$paths)
+if (!function_exists('preload')) {
+    function preload($as, $resource, $expiration = null)
     {
-        return preg_replace_callback('/([^:])\/+/', function ($matches) {
-            return $matches[1] . '/';
-        }, implode('/', (array) $paths));
+        $pushed = [];
+        $expiration = $expiration ?: 60 * 60 * 24 * 30;
+        $prev = isset($_COOKIE['pushed']) ? json_decode($_COOKIE['pushed']) : [];
+
+        if (!is_array($resource)) {
+            $resource = [$resource];
+        }
+
+        foreach ($resource as $r) {
+            $ext = pathinfo($r, PATHINFO_EXTENSION);
+            $pushed[] = $r;
+            if (!in_array($r, $prev)) {
+                header(sprintf('Link: <%s>; as=%s; rel=preload;', $r, $as), false);
+            }
+        }
+
+        setcookie('pushed', json_encode($pushed), 0, ($expiration + time()));
+
+        return $resource;
     }
 }
 
@@ -131,6 +157,15 @@ if (!function_exists('attr')) {
         }
 
         return count($html) > 0 ? ' '.implode(' ', $html) : '';
+    }
+}
+
+if (!function_exists('join_path')) {
+    function join_path(...$paths)
+    {
+        return preg_replace_callback('/([^:])\/+/', function ($matches) {
+            return $matches[1] . '/';
+        }, implode('/', (array) $paths));
     }
 }
 ```
