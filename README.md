@@ -170,3 +170,36 @@ if (!function_exists('join_path')) {
 }
 ```
 
+##### babel.config.js
+
+```js
+module.exports = {
+    plugins: [
+        '@babel/syntax-dynamic-import'
+    ],
+    presets: [
+        ['@babel/env', {
+            corejs: 3,
+            modules: 'cjs',
+            useBuiltIns: 'usage',
+            shippedProposals: true
+        }]
+    ]
+};
+```
+
+##### postcss.config.js
+
+```js
+module.exports = {
+    plugins: {
+        'postcss-import': {},
+        'tailwindcss': {},
+        'autoprefixer': global.inProduction
+            ? { flexbox: 'no-2009', grid: 'no-autoplace' }
+            : false,
+        'postcss-nested': {},
+        'postcss-color-function': {}
+    }
+};
+```

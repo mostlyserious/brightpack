@@ -1,5 +1,4 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const plugins = require('../postcss.plugins');
 
 module.exports = {
     test: /\.css$/,
@@ -14,11 +13,11 @@ module.exports = {
                 sourceMap: false
             }
         },
-        plugins.length ? {
+        {
             loader: 'postcss-loader',
             options: {
-                plugins, sourceMap: false
+                sourceMap: false
             }
-        } : null
+        }
     ].filter(Boolean)
 };

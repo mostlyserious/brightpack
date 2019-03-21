@@ -1,7 +1,8 @@
 const sass = require('node-sass');
 const postcss = require('postcss');
-const config = require('../sass.config');
-const plugins = require('../postcss.plugins');
+const postcssload = require('postcss-load-config');
+const postcssrc = postcssload(process.cwd());
+const sassconfig = require('../sass.config');
 
 module.exports = {
     test: /\.(svelte|svlt)(\.html)?$/,
@@ -16,7 +17,8 @@ module.exports = {
                 store: true,
                 preprocess: {
                     async style({ content, attributes }) {
-                        if (!attributes.type || attributes.type === 'text/css') {
+                        if (!attributes.type || ['text/postcss', 'text/css'].includes(attributes.type)) {
+                            const { plugins } = await postcssrc;
                             const result = await postcss(plugins).process(content, {
                                 from: 'src',
                                 map: { inline: false }
@@ -28,7 +30,7 @@ module.exports = {
                             };
                         } else if (attributes.type === 'text/scss') {
                             const result = await sass.render({
-                                ...config,
+                                ...sassconfig,
                                 data: content,
                                 sourceMap: false
                             });
