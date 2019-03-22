@@ -2,6 +2,7 @@ const path = require('path');
 const dotenv = require('dotenv');
 const hmr = require('./lib/hmr');
 const webpack = require('webpack');
+const { cloneDeep } = require('lodash');
 const editLoader = require('./util/edit-loader');
 const removePlugin = require('./util/remove-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -99,7 +100,6 @@ module.exports = (args, extend) => {
         });
 
         base.plugins = [
-            new CleanWebpackPlugin({ verbose: false }),
             new ManifestPlugin({
                 fileName: 'manifest.json',
                 writeToFileEmit: true,
@@ -159,8 +159,8 @@ module.exports = (args, extend) => {
             }));
 
             base.plugins.push(new CssoWebpackPlugin());
-
             base.plugins.push(new RemoveEmptyEntriesPlugin());
+            base.plugins.push(new CleanWebpackPlugin({ verbose: false }));
         } else {
             base.devtool = 'cheap-module-eval-source-map';
 
@@ -171,7 +171,11 @@ module.exports = (args, extend) => {
             base.plugins.push(new HotModuleReplacementPlugin());
         }
 
-        return global.inProduction ? extend(base) : hmr(extend(base), args);
+        const instance = cloneDeep(base);
+
+        return global.inProduction
+            ? extend(instance)
+            : hmr(extend(instance), args);
     };
 };
 
