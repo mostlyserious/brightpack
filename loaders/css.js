@@ -1,7 +1,7 @@
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-    test: /\.css$/,
+    test: /\.(post)?css$/,
     exclude: /editor\.css$/,
     use: [
         global.inProduction ? MiniCssExtractPlugin.loader : {
