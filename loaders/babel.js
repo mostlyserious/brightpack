@@ -5,7 +5,7 @@ const loader = require('babel-loader/package.json');
 const json = JSON.stringify;
 
 module.exports = {
-    test: /\.([tj]sx?|svelte|svlt)$/,
+    test: /\.([mc]?[tj]sx?|svelte|svlt)$/,
     exclude: /node_modules\/core-js/,
     use: [
         {
