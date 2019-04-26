@@ -7,6 +7,9 @@ module.exports = {
         global.inProduction ? MiniCssExtractPlugin.loader : {
             loader: 'vue-style-loader'
         },
+        // {
+        //     loader: 'style-loader'
+        // },
         {
             loader: 'css-loader',
             options: {

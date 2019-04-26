@@ -12,9 +12,7 @@ module.exports = {
             loader: 'svelte-loader',
             options: {
                 dev: !global.inProduction,
-                hotReload: !global.inProduction,
                 emitCss: true,
-                store: true,
                 preprocess: {
                     async style({ content, attributes }) {
                         if (!attributes.type || ['text/postcss', 'text/css'].includes(attributes.type)) {

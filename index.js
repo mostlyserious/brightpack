@@ -61,7 +61,7 @@ module.exports = (args, extend) => {
         };
 
         base.resolve = {
-            extensions: ['*', '.js'],
+            // extensions: ['*', '.js'],
             alias: { '@': path.resolve(process.cwd(), 'src') }
         };
 
@@ -69,7 +69,7 @@ module.exports = (args, extend) => {
 
         base.module = {
             rules: [
-                require('./loaders/eslint'),
+                // require('./loaders/eslint'),
                 require('./loaders/vue'),
                 require('./loaders/babel'),
                 require('./loaders/css'),
@@ -168,7 +168,7 @@ module.exports = (args, extend) => {
             base.output.sourceMapFilename = '[name].map';
 
             base.plugins.push(new NamedModulesPlugin());
-            base.plugins.push(new HotModuleReplacementPlugin());
+            base.plugins.push(new HotModuleReplacementPlugin()); // Possible Svelte Issue, need to check this again.
         }
 
         const instance = cloneDeep(base);
