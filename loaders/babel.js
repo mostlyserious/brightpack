@@ -6,7 +6,7 @@ const json = JSON.stringify;
 
 module.exports = {
     test: /\.([mc]?[tj]sx?|svelte|svlt)$/,
-    exclude: /node_modules\/(?!svelte|vue)/,
+    exclude: /node_modules\/(?!svelte|vue|bootstrap)/,
     use: [
         {
             loader: 'babel-loader',
