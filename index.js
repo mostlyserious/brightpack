@@ -137,7 +137,7 @@ module.exports = (args, extend) => {
                     minSize: 1024 * 10,
                     cacheGroups: {
                         polyfills: {
-                            test: /[\\/]core-js[\\/]/,
+                            test: /\/core-js\//,
                             chunks: 'all'
                         }
                     }
