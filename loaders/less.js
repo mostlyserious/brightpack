@@ -3,7 +3,6 @@ const use = [...css.use];
 
 module.exports = {
     test: /\.less$/,
-    exclude: /editor\.less$/,
     use: [
         ...use,
         {
