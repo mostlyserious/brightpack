@@ -82,8 +82,10 @@ module.exports = (args, extend) => {
                 require('./loaders/font'),
                 require('./loaders/raw'),
                 require('./loaders/svelte'),
-                require('./loaders/eslint')
-            ]
+                requireOptional('eslint')
+                    ? require('./loaders/eslint')
+                    : null
+            ].filter(Boolean)
         };
 
         editLoader(base, 'file-loader', (loader, rule) => {
