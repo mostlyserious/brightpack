@@ -22,7 +22,7 @@ try {
     console.warn('No .env file');
 }
 
-module.exports = (args, extend) => {
+module.exports = (args = {}, extend = c => c) => {
     // eslint-disable-next-line complexity
     return (env, { mode }) => {
         args.port = args.port || 8888;
@@ -54,7 +54,7 @@ module.exports = (args, extend) => {
 
         base.output = {
             filename: global.inProduction ? `js/${args.filename}.js` : 'js/[name].js',
-            path: path.resolve(args.dest),
+            path: args.dest ? path.resolve(args.dest) : args.dest,
             publicPath: global.inProduction ? args.publicPath : `${process.env.APP_URL}:${args.port}/`,
             hotUpdateChunkFilename: 'hmr/[id].[hash].hot-update.js',
             hotUpdateMainFilename: 'hmr/[hash].hot-update.json'
