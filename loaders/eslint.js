@@ -3,7 +3,7 @@ const chalk = require('chalk');
 
 module.exports = {
     enforce: 'pre',
-    test: /\.([tj]sx?|svelte|svlt|vue)$/,
+    test: /\.([mc]?[tj]sx?|svelte|svlt|vue)$/,
     exclude: /node_modules/,
     use: [
         {

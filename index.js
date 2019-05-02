@@ -10,8 +10,8 @@ const requireOptional = require('./lib/require-optional');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const CleanWebpackPlugin = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssoWebpackPlugin = require('csso-webpack-plugin').default;
 const { NamedModulesPlugin, HotModuleReplacementPlugin } = webpack;
+const { default: CssoWebpackPlugin } = require('csso-webpack-plugin');
 const RemoveEmptyEntriesPlugin = require('./lib/remove-empty-entries-plugin');
 
 try {
@@ -69,7 +69,6 @@ module.exports = (args, extend) => {
 
         base.module = {
             rules: [
-                // require('./loaders/eslint'),
                 require('./loaders/vue'),
                 require('./loaders/babel'),
                 require('./loaders/css'),
@@ -81,8 +80,9 @@ module.exports = (args, extend) => {
                 require('./loaders/tinypng'),
                 require('./loaders/svgo'),
                 require('./loaders/font'),
+                require('./loaders/raw'),
                 require('./loaders/svelte'),
-                require('./loaders/raw')
+                require('./loaders/eslint')
             ]
         };
 
@@ -146,6 +146,9 @@ module.exports = (args, extend) => {
                     new TerserPlugin({
                         parallel: true,
                         cache: path.resolve('.cache/terser')
+                    }),
+                    new CssoWebpackPlugin({
+                        comments: false
                     })
                 ]
             };
@@ -155,7 +158,6 @@ module.exports = (args, extend) => {
                 chunkFilename: `css/${args.filename}.css`
             }));
 
-            base.plugins.push(new CssoWebpackPlugin());
             base.plugins.push(new RemoveEmptyEntriesPlugin());
             base.plugins.push(new CleanWebpackPlugin({ verbose: false }));
         } else {
@@ -165,7 +167,7 @@ module.exports = (args, extend) => {
             base.output.sourceMapFilename = '[name].map';
 
             base.plugins.push(new NamedModulesPlugin());
-            base.plugins.push(new HotModuleReplacementPlugin()); // Possible Svelte Issue, need to check this again.
+            base.plugins.push(new HotModuleReplacementPlugin());
         }
 
         const instance = cloneDeep(base);
