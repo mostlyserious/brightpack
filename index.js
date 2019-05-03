@@ -27,7 +27,7 @@ module.exports = (args = {}, extend = c => c) => {
     return (env, { mode }) => {
         args.port = args.port || 8888;
         args.mode = mode || 'production';
-        args.publicPath = args.publicPath || args.dest ? `/${args.dest}/` : args.dest;
+        args.publicPath = args.publicPath || `/${args.dest || 'dist'}/`;
         args.filename = args.filename || '[name].[contenthash:7]';
 
         process.env.NODE_ENV = args.mode;
