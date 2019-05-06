@@ -61,7 +61,6 @@ module.exports = (args = {}, extend = c => c) => {
         };
 
         base.resolve = {
-            // extensions: ['*', '.js'],
             alias: { '@': path.resolve(process.cwd(), 'src') }
         };
 
