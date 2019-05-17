@@ -1,5 +1,5 @@
 const css = require('./css');
-const use = [...css.use];
+const use = [ ...css.use ];
 
 module.exports = {
     test: /\.less$/,

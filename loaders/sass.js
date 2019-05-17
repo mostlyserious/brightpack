@@ -1,6 +1,6 @@
 const sass = require('../sass.config');
 const css = require('./css');
-const use = [...css.use];
+const use = [ ...css.use ];
 
 module.exports = {
     test: /\.s[ac]ss$/,
