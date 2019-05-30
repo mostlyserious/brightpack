@@ -8,7 +8,7 @@ const removePlugin = require('./util/remove-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const requireOptional = require('./lib/require-optional');
 const ManifestPlugin = require('webpack-manifest-plugin');
-const CleanWebpackPlugin = require('clean-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { NamedModulesPlugin, HotModuleReplacementPlugin } = webpack;
 const { default: CssoWebpackPlugin } = require('csso-webpack-plugin');
@@ -36,7 +36,7 @@ module.exports = (args = {}, extend = c => c) => {
 
         global.inProduction = args.mode === 'production';
 
-        const base = {
+        let base = {
             target: 'web',
             context: process.cwd(),
             mode: args.mode,
@@ -52,12 +52,16 @@ module.exports = (args = {}, extend = c => c) => {
             }
         };
 
+        base = cloneDeep(base);
+
+        base.name = args.name || '';
+
         base.output = {
-            filename: global.inProduction ? `js/${args.filename}.js` : 'js/[name].js',
+            filename: path.join(base.name, global.inProduction ? `js/${args.filename}.js` : 'js/[name].js'),
             path: args.dest ? path.resolve(args.dest) : args.dest,
             publicPath: global.inProduction ? args.publicPath : `${process.env.APP_URL}:${args.port}/`,
-            hotUpdateChunkFilename: 'hmr/[id].[hash].hot-update.js',
-            hotUpdateMainFilename: 'hmr/[hash].hot-update.json'
+            hotUpdateChunkFilename: path.join(base.name, 'hmr/[id].[hash].hot-update.js'),
+            hotUpdateMainFilename: path.join(base.name, 'hmr/[hash].hot-update.json')
         };
 
         base.resolve = {
@@ -68,24 +72,29 @@ module.exports = (args = {}, extend = c => c) => {
 
         base.module = {
             rules: [
-                require('./loaders/vue'),
-                require('./loaders/babel'),
-                require('./loaders/css'),
-                require('./loaders/sass'),
-                require('./loaders/less'),
-                require('./loaders/image'),
-                require('./loaders/media'),
-                require('./loaders/favicon'),
-                require('./loaders/tinypng'),
-                require('./loaders/svgo'),
-                require('./loaders/font'),
-                require('./loaders/raw'),
-                require('./loaders/svelte'),
-                requireOptional('eslint')
+                cloneDeep(require('./loaders/vue')),
+                cloneDeep(require('./loaders/babel')),
+                cloneDeep(require('./loaders/css')),
+                cloneDeep(require('./loaders/sass')),
+                cloneDeep(require('./loaders/less')),
+                cloneDeep(require('./loaders/image')),
+                cloneDeep(require('./loaders/media')),
+                cloneDeep(require('./loaders/favicon')),
+                cloneDeep(require('./loaders/tinypng')),
+                cloneDeep(require('./loaders/svgo')),
+                cloneDeep(require('./loaders/font')),
+                cloneDeep(require('./loaders/raw')),
+                cloneDeep(require('./loaders/svelte')),
+                cloneDeep(requireOptional('eslint')
                     ? require('./loaders/eslint')
-                    : null
+                    : null)
             ].filter(Boolean)
         };
+
+        editLoader(base, 'babel-loader', (loader, rule) => {
+            loader.options.envName = base.name;
+            loader.options.cacheDirectory = `${loader.options.cacheDirectory}/${base.name}`;
+        });
 
         editLoader(base, 'file-loader', (loader, rule) => {
             if (rule.test.toString() !== '/\\/media\\//') {
@@ -129,8 +138,8 @@ module.exports = (args = {}, extend = c => c) => {
         if (global.inProduction) {
             base.devtool = 'none';
 
-            base.output.chunkFilename = `js/${args.filename}.js`;
-            base.output.sourceMapFilename = `${args.filename}.map`;
+            base.output.chunkFilename = path.join(base.name, `js/${args.filename}.js`);
+            base.output.sourceMapFilename = path.join(base.name, `${args.filename}.map`);
 
             base.optimization = {
                 splitChunks: {
@@ -155,8 +164,8 @@ module.exports = (args = {}, extend = c => c) => {
             };
 
             base.plugins.push(new MiniCssExtractPlugin({
-                filename: `css/${args.filename}.css`,
-                chunkFilename: `css/${args.filename}.css`
+                filename: path.join(base.name, `css/${args.filename}.css`),
+                chunkFilename: path.join(base.name, `css/${args.filename}.css`)
             }));
 
             base.plugins.push(new RemoveEmptyEntriesPlugin());
@@ -164,18 +173,16 @@ module.exports = (args = {}, extend = c => c) => {
         } else {
             base.devtool = 'cheap-module-eval-source-map';
 
-            base.output.chunkFilename = 'js/[name].js';
-            base.output.sourceMapFilename = '[name].map';
+            base.output.chunkFilename = path.join(base.name, 'js/[name].js');
+            base.output.sourceMapFilename = path.join(base.name, '[name].map');
 
             base.plugins.push(new NamedModulesPlugin());
             base.plugins.push(new HotModuleReplacementPlugin());
         }
 
-        const instance = cloneDeep(base);
-
         return global.inProduction
-            ? extend(instance)
-            : hmr(extend(instance), args);
+            ? extend(base)
+            : hmr(extend(base), args);
     };
 };
 
