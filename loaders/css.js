@@ -4,7 +4,7 @@ module.exports = {
     test: /\.(post)?css$/,
     use: [
         global.inProduction ? MiniCssExtractPlugin.loader : {
-            loader: 'vue-style-loader'
+            loader: 'style-loader'
         },
         {
             loader: 'css-loader',
