@@ -65,6 +65,7 @@ module.exports = (args = {}, extend = c => c) => {
         };
 
         base.resolve = {
+            extensions: [ '.wasm', '.mjs', '.js', '.jsx', '.json' ],
             alias: { '@': path.resolve(process.cwd(), 'src') }
         };
 
