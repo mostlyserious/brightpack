@@ -1,4 +1,4 @@
-const sass = require('../sass.config');
+const sassOptions = require('../sass.config');
 const css = require('./css');
 const use = [ ...css.use ];
 
@@ -9,8 +9,9 @@ module.exports = {
         {
             loader: 'sass-loader',
             options: {
-                ...sass,
-                sourceMap: false
+                sassOptions,
+                sourceMap: false,
+                webpackImporter: false
             }
         }
     ]

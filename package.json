@@ -1,7 +1,7 @@
 {
   "name": "brightpack",
-  "version": "3.4.1",
-  "description": "🔄 Reasonable Webpack config boilerplate with a little Wordpress flavor.",
+  "version": "3.4.2",
+  "description": "🔄 Reasonable Webpack config boilerplate.",
   "repository": "corneliusio/brightpack",
   "license": "MIT",
   "author": {
@@ -32,7 +32,8 @@
     "css-loader": "^3.0.0",
     "csso-webpack-plugin": "^1.0.0-beta",
     "dotenv": "^8.0.0",
-    "eslint-loader": "^2.1.0",
+    "eslint-loader": "^3.0.0",
+    "fibers": "^4.0.1",
     "file-loader": "^4.0.0",
     "less": "^3.8.1",
     "less-loader": "^5.0.0",
@@ -51,7 +52,7 @@
     "postcss-nesting": "^7.0.0",
     "raw-loader": "^3.0.0",
     "sass": "^1.15.1",
-    "sass-loader": "^7.0.1",
+    "sass-loader": "^8.0.0",
     "style-loader": "^1.0.0",
     "svelte": "^3.1.0",
     "svelte-loader": "^2.13.3",

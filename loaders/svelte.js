@@ -2,7 +2,7 @@ const sass = require('node-sass');
 const postcss = require('postcss');
 const postcssload = require('postcss-load-config');
 const postcssrc = postcssload(process.cwd());
-const sassconfig = require('../sass.config');
+const sassOptions = require('../sass.config');
 
 module.exports = {
     test: /\.(svelte|svlt)(\.html)?$/,
@@ -33,7 +33,7 @@ module.exports = {
                             };
                         } else if (attributes.type === 'text/scss') {
                             const result = await sass.render({
-                                ...sassconfig,
+                                ...sassOptions,
                                 data: content,
                                 sourceMap: false
                             });
