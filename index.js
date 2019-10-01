@@ -145,6 +145,7 @@ module.exports = (args = {}, extend = c => c) => {
             base.optimization = {
                 splitChunks: {
                     chunks: 'all',
+                    minChunks: 2,
                     minSize: 1024 * 10,
                     cacheGroups: {
                         polyfills: {
