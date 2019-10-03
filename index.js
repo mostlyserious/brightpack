@@ -156,7 +156,6 @@ module.exports = (args = {}, extend = c => c) => {
                 },
                 minimizer: [
                     new TerserPlugin({
-                        parallel: true,
                         cache: path.resolve('.cache/terser')
                     }),
                     new CssoWebpackPlugin({
