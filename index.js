@@ -108,6 +108,7 @@ module.exports = (args = {}, extend = c => c) => {
         });
 
         base.plugins = [
+            // Depricated.
             new ManifestPlugin({
                 fileName: 'manifest.json',
                 writeToFileEmit: true,
@@ -117,6 +118,36 @@ module.exports = (args = {}, extend = c => c) => {
                         const filename = file.isAsset ? file.name : `${extension}/${file.name}`;
 
                         return seed[filename] = file.path;
+                    });
+
+                    return seed;
+                }
+            }),
+            new ManifestPlugin({
+                fileName: 'assets.json',
+                writeToFileEmit: true,
+                generate(seed, files, entrypoints) {
+                    files.forEach(file => {
+                        if (file.isAsset) {
+                            seed[file.name] = file.path;
+                        }
+                    });
+
+                    return seed;
+                }
+            }),
+            new ManifestPlugin({
+                fileName: 'entries.json',
+                writeToFileEmit: true,
+                generate(seed, files, entrypoints) {
+                    Object.keys(entrypoints).forEach(entry => {
+                        const items = entrypoints[entry];
+
+                        seed[entry] = items.map(item => {
+                            return files
+                                .map(file => file.path)
+                                .find(path => path.endsWith(item));
+                        });
                     });
 
                     return seed;
