@@ -108,21 +108,6 @@ module.exports = (args = {}, extend = c => c) => {
         });
 
         base.plugins = [
-            // Depricated.
-            new ManifestPlugin({
-                fileName: 'manifest.json',
-                writeToFileEmit: true,
-                generate(seed, files) {
-                    files.forEach(file => {
-                        const extension = path.extname(file.name).replace('.', '');
-                        const filename = file.isAsset ? file.name : `${extension}/${file.name}`;
-
-                        return seed[filename] = file.path;
-                    });
-
-                    return seed;
-                }
-            }),
             new ManifestPlugin({
                 fileName: 'assets.json',
                 writeToFileEmit: true,
@@ -178,6 +163,11 @@ module.exports = (args = {}, extend = c => c) => {
                     chunks: 'all',
                     minChunks: 2,
                     minSize: 1024 * 10,
+                    name(module, chunks, cacheGroupKey) {
+                        const allChunksNames = chunks.map(item => item.name.substring(0, 3));
+
+                        return `${cacheGroupKey}.${allChunksNames.join('~')}`;
+                    },
                     cacheGroups: {
                         polyfills: {
                             test: /\/core-js\//,
