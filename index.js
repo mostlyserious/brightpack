@@ -3,6 +3,7 @@ const dotenv = require('dotenv');
 const hmr = require('./lib/hmr');
 const webpack = require('webpack');
 const { cloneDeep } = require('lodash');
+const chunkName = require('./lib/chunk-name');
 const editLoader = require('./util/edit-loader');
 const removePlugin = require('./util/remove-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
@@ -163,11 +164,7 @@ module.exports = (args = {}, extend = c => c) => {
                     chunks: 'all',
                     minChunks: 2,
                     minSize: 1024 * 10,
-                    name(module, chunks, cacheGroupKey) {
-                        const allChunksNames = chunks.map(item => item.name.substring(0, 3));
-
-                        return `${cacheGroupKey}.${allChunksNames.join('~')}`;
-                    },
+                    name: chunkName,
                     cacheGroups: {
                         polyfills: {
                             test: /\/core-js\//,
@@ -197,6 +194,10 @@ module.exports = (args = {}, extend = c => c) => {
 
             base.output.chunkFilename = path.join(base.name, 'js/[name].js');
             base.output.sourceMapFilename = path.join(base.name, '[name].map');
+
+            base.optimization = {
+                splitChunks: { name: chunkName }
+            };
 
             base.plugins.push(new NamedModulesPlugin());
             base.plugins.push(new HotModuleReplacementPlugin());
