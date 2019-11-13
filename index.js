@@ -102,6 +102,10 @@ module.exports = (args = {}, extend = c => c) => {
             if (rule.test.toString() !== '/\\/media\\//') {
                 loader.options.name = global.inProduction ? `${args.filename}.[ext]` : '[name].[ext]';
             }
+
+            if ((rule.include || '').toString() === '/\\/favicons?\\//') {
+                loader.options.name = global.inProduction ? `[name].[ext]?v=[contenthash:7]` : '[name].[ext]';
+            }
         });
 
         editLoader(base, 'vue-loader', (loader, rule) => {
