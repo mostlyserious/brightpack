@@ -10,6 +10,7 @@ const TerserPlugin = require('terser-webpack-plugin');
 const requireOptional = require('./lib/require-optional');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+// const RealFaviconPlugin = require('./lib/real-favicon-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { NamedModulesPlugin, HotModuleReplacementPlugin } = webpack;
 const { default: CssoWebpackPlugin } = require('csso-webpack-plugin');
@@ -113,6 +114,9 @@ module.exports = (args = {}, extend = c => c) => {
         });
 
         base.plugins = [
+            // new RealFaviconPlugin({
+            //     outputPath: '.cache/favicon'
+            // }),
             new ManifestPlugin({
                 fileName: 'assets.json',
                 writeToFileEmit: true,
