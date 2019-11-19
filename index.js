@@ -115,7 +115,7 @@ module.exports = (args = {}, extend = c => c) => {
 
         base.plugins = [
             // new RealFaviconPlugin({
-            //     outputPath: '.cache/favicon'
+            //     outputPath: args.publicPath
             // }),
             new ManifestPlugin({
                 fileName: 'assets.json',
