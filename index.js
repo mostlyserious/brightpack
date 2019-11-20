@@ -10,7 +10,6 @@ const TerserPlugin = require('terser-webpack-plugin');
 const requireOptional = require('./lib/require-optional');
 const ManifestPlugin = require('webpack-manifest-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-// const RealFaviconPlugin = require('./lib/real-favicon-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { NamedModulesPlugin, HotModuleReplacementPlugin } = webpack;
 const { default: CssoWebpackPlugin } = require('csso-webpack-plugin');
@@ -62,8 +61,8 @@ module.exports = (args = {}, extend = c => c) => {
             filename: path.join(base.name, global.inProduction ? `js/${args.filename}.js` : 'js/[name].js'),
             path: args.dest ? path.resolve(args.dest) : args.dest,
             publicPath: global.inProduction ? args.publicPath : `${process.env.APP_URL}:${args.port}/`,
-            hotUpdateChunkFilename: path.join(base.name, 'hmr/[id].[hash].hot-update.js'),
-            hotUpdateMainFilename: path.join(base.name, 'hmr/[hash].hot-update.json')
+            hotUpdateChunkFilename: path.join(base.name, 'hmr/[id].[hash:7].hot-update.js'),
+            hotUpdateMainFilename: path.join(base.name, 'hmr/[hash:7].hot-update.json')
         };
 
         base.resolve = {
@@ -82,7 +81,6 @@ module.exports = (args = {}, extend = c => c) => {
                 cloneDeep(require('./loaders/less')),
                 cloneDeep(require('./loaders/image')),
                 cloneDeep(require('./loaders/media')),
-                cloneDeep(require('./loaders/favicon')),
                 cloneDeep(require('./loaders/tinypng')),
                 cloneDeep(require('./loaders/svgo')),
                 cloneDeep(require('./loaders/font')),
@@ -103,10 +101,6 @@ module.exports = (args = {}, extend = c => c) => {
             if (rule.test.toString() !== '/\\/media\\//') {
                 loader.options.name = global.inProduction ? `${args.filename}.[ext]` : '[name].[ext]';
             }
-
-            if ((rule.include || '').toString() === '/\\/favicons?\\//') {
-                loader.options.name = global.inProduction ? `[name].[ext]?v=[contenthash:7]` : '[name].[ext]';
-            }
         });
 
         editLoader(base, 'vue-loader', (loader, rule) => {
@@ -114,9 +108,6 @@ module.exports = (args = {}, extend = c => c) => {
         });
 
         base.plugins = [
-            // new RealFaviconPlugin({
-            //     outputPath: args.publicPath
-            // }),
             new ManifestPlugin({
                 fileName: 'assets.json',
                 writeToFileEmit: true,
