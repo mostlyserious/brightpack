@@ -159,6 +159,7 @@ module.exports = (args = {}, extend = c => c) => {
             base.output.sourceMapFilename = path.join(base.name, `${args.filename}.map`);
 
             base.optimization = {
+                removeAvailableModules: false,
                 splitChunks: {
                     chunks: 'all',
                     minChunks: 2,
