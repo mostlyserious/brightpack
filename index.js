@@ -164,7 +164,7 @@ module.exports = (args = {}, extend = c => c) => {
                     chunks: 'all',
                     minChunks: 2,
                     minSize: 1024 * 10,
-                    name: chunkName,
+                    name: chunkName(args.chunkNameLength || 3),
                     cacheGroups: {
                         polyfills: {
                             test: /\/core-js\//,
@@ -196,7 +196,7 @@ module.exports = (args = {}, extend = c => c) => {
             base.output.sourceMapFilename = path.join(base.name, '[name].map');
 
             base.optimization = {
-                splitChunks: { name: chunkName }
+                splitChunks: { name: chunkName(args.chunkNameLength || 3) }
             };
 
             base.plugins.push(new NamedModulesPlugin());
