@@ -5,13 +5,14 @@ const sassOptions = require('./sass.config');
 const postcssload = require('postcss-load-config');
 const postcssrc = postcssload(process.cwd());
 const requireOptional = require('./lib/require-optional');
-const { preprocess, ...svelteOptions } = requireOptional(path.join(process.cwd(), 'svelte.config.js')) || { preprocess: {} };
+
+let { preprocess, ...svelteOptions } = requireOptional(path.join(process.cwd(), 'svelte.config.js')) || {};
+
+preprocess = preprocess || {};
 
 module.exports = {
     emitCss: true,
     dev: !global.inProduction,
-    hotReload: !global.inProduction,
-    hotOptions: !global.inProduction,
     ...svelteOptions,
     preprocess: {
         ...preprocess,
