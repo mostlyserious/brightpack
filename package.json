@@ -1,6 +1,6 @@
 {
   "name": "brightpack",
-  "version": "4.1.2",
+  "version": "4.2.0",
   "description": "🔄 Reasonable Webpack config boilerplate.",
   "repository": "corneliusio/brightpack",
   "license": "MIT",
