@@ -1,6 +1,6 @@
 {
   "name": "brightpack",
-  "version": "4.2.1",
+  "version": "4.3.0",
   "description": "🔄 Reasonable Webpack config boilerplate.",
   "repository": "corneliusio/brightpack",
   "license": "MIT",
@@ -10,8 +10,7 @@
   },
   "keywords": [
     "webpack",
-    "boilerplate",
-    "wordpress"
+    "boilerplate"
   ],
   "main": "index.js",
   "dependencies": {
@@ -26,7 +25,7 @@
     "babel-loader": "^8.0.0",
     "browserslist": "^4.0.0",
     "cache-loader": "^4.0.1",
-    "chalk": "^3.0.0",
+    "chalk": "^4.1.0",
     "chokidar": "^3.0.0",
     "clean-webpack-plugin": "^3.0.0",
     "cli-table2": "^0.2.0",
@@ -34,13 +33,11 @@
     "css-loader": "^3.0.0",
     "csso-webpack-plugin": "^2.0.0-beta.1",
     "dotenv": "^8.0.0",
-    "eslint-loader": "^3.0.0",
-    "fibers": "^4.0.1",
+    "eslint-loader": "^4.0.2",
     "file-loader": "^6.0.0",
     "https": "^1.0.0",
     "is-utf8": "^0.2.1",
-    "less": "^3.8.1",
-    "less-loader": "^5.0.0",
+    "less-loader": "^6.1.1",
     "loader-utils": "^2.0.0",
     "lodash": "^4.17.11",
     "mini-css-extract-plugin": "^0.9.0",
@@ -63,7 +60,7 @@
     "svelte-loader": "^2.13.3",
     "svgo": "^1.0.5",
     "svgo-loader": "^2.1.0",
-    "terser-webpack-plugin": "^2.1.2",
+    "terser-webpack-plugin": "^3.0.5",
     "tinify-loader": "^1.0.0",
     "tiny-glob": "^0.2.0",
     "vue-loader": "^15.0.0",
