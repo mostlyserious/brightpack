@@ -258,11 +258,11 @@ module.exports = {
                 }
             }
         },
-        'autoprefixer': global.inProduction
-            ? { flexbox: 'no-2009', grid: 'no-autoplace' }
-            : false,
         'postcss-nesting': {},
-        'postcss-color-function': {}
+        'postcss-color-function': {},
+        'postcss-preset-env': global.inProduction ? {
+            'autoprefixer': { flexbox: 'no-2009', grid: 'no-autoplace' }
+        } : false
     }
 };
 ```
