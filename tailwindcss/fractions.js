@@ -2,7 +2,6 @@ const plugin = require('tailwindcss/plugin');
 
 module.exports = plugin(({ e, addUtilities, variants, theme }) => {
     const bases = {
-        'w': [ 'width', 'width' ],
         'h': [ 'height', 'height' ],
         'min-w': [ 'min-width', 'minWidth' ],
         'max-w': [ 'max-width', 'maxWidth' ],
