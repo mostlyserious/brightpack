@@ -11,7 +11,7 @@ let { preprocess, ...svelteOptions } = requireOptional(path.join(process.cwd(), 
 preprocess = preprocess || {};
 
 module.exports = {
-    emitCss: true,
+    emitCss: false,
     dev: !global.inProduction,
     ...svelteOptions,
     preprocess: {

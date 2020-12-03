@@ -8,12 +8,12 @@ const editLoader = require('./util/edit-loader');
 const removePlugin = require('./util/remove-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const requireOptional = require('./lib/require-optional');
-const ManifestPlugin = require('webpack-manifest-plugin');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { NamedModulesPlugin, HotModuleReplacementPlugin } = webpack;
 const { default: CssoWebpackPlugin } = require('csso-webpack-plugin');
-const RemoveEmptyEntriesPlugin = require('./lib/remove-empty-entries-plugin');
+// const RemoveEmptyEntriesPlugin = require('./lib/remove-empty-entries-plugin');
 
 try {
     (env => Object.keys(env).forEach(key => {
@@ -88,7 +88,14 @@ module.exports = (args = {}, extend = c => c) => {
                 cloneDeep(require('./loaders/svelte')),
                 cloneDeep(requireOptional('eslint')
                     ? require('./loaders/eslint')
-                    : null)
+                    : null),
+                {
+                    test: /svelte\/.*\.mjs$/,
+                    type: 'javascript/auto',
+                    resolve: {
+                        fullySpecified: false
+                    }
+                }
             ].filter(Boolean)
         };
 
@@ -108,7 +115,7 @@ module.exports = (args = {}, extend = c => c) => {
         });
 
         base.plugins = [
-            new ManifestPlugin({
+            new WebpackManifestPlugin({
                 fileName: 'assets.json',
                 writeToFileEmit: true,
                 generate(seed, files, entrypoints) {
@@ -121,7 +128,7 @@ module.exports = (args = {}, extend = c => c) => {
                     return seed;
                 }
             }),
-            new ManifestPlugin({
+            new WebpackManifestPlugin({
                 fileName: 'entries.json',
                 writeToFileEmit: true,
                 generate(seed, files, entrypoints) {
@@ -153,7 +160,7 @@ module.exports = (args = {}, extend = c => c) => {
         }
 
         if (global.inProduction) {
-            base.devtool = 'none';
+            // base.devtool = 'none';
 
             base.output.chunkFilename = path.join(base.name, `js/${args.filename}.js`);
             base.output.sourceMapFilename = path.join(base.name, `${args.filename}.map`);
@@ -174,7 +181,7 @@ module.exports = (args = {}, extend = c => c) => {
                 },
                 minimizer: [
                     new TerserPlugin({
-                        cache: path.resolve('.cache/terser')
+
                     }),
                     new CssoWebpackPlugin({
                         comments: false
@@ -187,7 +194,7 @@ module.exports = (args = {}, extend = c => c) => {
                 chunkFilename: path.join(base.name, `css/${args.filename}.css`)
             }));
 
-            base.plugins.push(new RemoveEmptyEntriesPlugin());
+            // base.plugins.push(new RemoveEmptyEntriesPlugin());
             base.plugins.push(new CleanWebpackPlugin({ verbose: false }));
         } else {
             base.devtool = 'cheap-module-eval-source-map';
