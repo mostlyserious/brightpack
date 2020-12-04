@@ -11,7 +11,7 @@ const requireOptional = require('./lib/require-optional');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { NamedModulesPlugin, HotModuleReplacementPlugin } = webpack;
+const { HotModuleReplacementPlugin } = webpack;
 const { default: CssoWebpackPlugin } = require('csso-webpack-plugin');
 // const RemoveEmptyEntriesPlugin = require('./lib/remove-empty-entries-plugin');
 
@@ -62,7 +62,7 @@ module.exports = (args = {}, extend = c => c) => {
             path: args.dest ? path.resolve(args.dest) : args.dest,
             publicPath: global.inProduction ? args.publicPath : `${process.env.APP_URL}:${args.port}/`,
             hotUpdateChunkFilename: path.join(base.name, 'hmr/[id].[hash:7].hot-update.js'),
-            hotUpdateMainFilename: path.join(base.name, 'hmr/[hash:7].hot-update.json')
+            hotUpdateMainFilename: path.join(base.name, 'hmr/[runtime].[hash:7].hot-update.json')
         };
 
         base.resolve = {
@@ -197,7 +197,7 @@ module.exports = (args = {}, extend = c => c) => {
             // base.plugins.push(new RemoveEmptyEntriesPlugin());
             base.plugins.push(new CleanWebpackPlugin({ verbose: false }));
         } else {
-            base.devtool = 'cheap-module-eval-source-map';
+            base.devtool = 'eval-cheap-module-source-map';
 
             base.output.chunkFilename = path.join(base.name, 'js/[name].js');
             base.output.sourceMapFilename = path.join(base.name, '[name].map');
@@ -206,7 +206,6 @@ module.exports = (args = {}, extend = c => c) => {
                 splitChunks: { name: chunkName(args.chunkNameLength || 3) }
             };
 
-            base.plugins.push(new NamedModulesPlugin());
             base.plugins.push(new HotModuleReplacementPlugin());
         }
 
