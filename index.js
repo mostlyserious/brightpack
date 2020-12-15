@@ -160,7 +160,7 @@ module.exports = (args = {}, extend = c => c) => {
         }
 
         if (global.inProduction) {
-            // base.devtool = 'none';
+            base.devtool = undefined;
 
             base.output.chunkFilename = path.join(base.name, `js/${args.filename}.js`);
             base.output.sourceMapFilename = path.join(base.name, `${args.filename}.map`);
