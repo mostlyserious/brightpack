@@ -1,12 +1,10 @@
 module.exports = {
     test: /\.(png|jpe?g|gif|svgz?)$/,
     exclude: /\/(favicon|font)s?\//,
-    use: [
-        {
-            loader: 'file-loader',
-            options: {
-                outputPath: 'img/'
-            }
-        }
-    ]
+    type: 'asset/resource',
+    generator: {
+        filename: global.inProduction
+            ? `img/${global.args.filename}[ext]`
+            : 'img/[name][ext]'
+    }
 };

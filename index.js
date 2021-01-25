@@ -36,12 +36,12 @@ module.exports = (args = {}, extend = c => c) => {
         process.env.APP_URL = process.env.APP_URL || `http://${process.env.APP_HOST}`;
 
         global.inProduction = args.mode === 'production';
+        global.args = args;
 
         let base = {
             target: 'web',
             context: process.cwd(),
             mode: args.mode,
-            watch: !global.inProduction,
             stats: {
                 moduleTrace: false,
                 hash: false,
@@ -61,8 +61,8 @@ module.exports = (args = {}, extend = c => c) => {
             filename: path.join(base.name, global.inProduction ? `js/${args.filename}.js` : 'js/[name].js'),
             path: args.dest ? path.resolve(args.dest) : args.dest,
             publicPath: global.inProduction ? args.publicPath : `${process.env.APP_URL}:${args.port}/`,
-            hotUpdateChunkFilename: path.join(base.name, 'hmr/[id].[hash:7].hot-update.js'),
-            hotUpdateMainFilename: path.join(base.name, 'hmr/[runtime].[hash:7].hot-update.json')
+            hotUpdateChunkFilename: path.join(base.name, 'hmr/[id].[fullhash].hot-update.js'),
+            hotUpdateMainFilename: path.join(base.name, 'hmr/[runtime].[fullhash].hot-update.json')
         };
 
         base.resolve = {
@@ -167,6 +167,7 @@ module.exports = (args = {}, extend = c => c) => {
 
             base.optimization = {
                 removeAvailableModules: false,
+                removeEmptyChunks: true,
                 splitChunks: {
                     chunks: 'all',
                     minChunks: 2,
@@ -211,7 +212,7 @@ module.exports = (args = {}, extend = c => c) => {
 
         return global.inProduction
             ? extend(base)
-            : hmr(extend(base), args);
+            : hmr(extend(base));
     };
 };
 
