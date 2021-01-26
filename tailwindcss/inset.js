@@ -5,16 +5,16 @@ module.exports = plugin(({ addUtilities, variants }) => {
         '.inset-center': {
             'top': '50%',
             'left': '50%',
-            '--transform-translate-x': '-50%',
-            '--transform-translate-y': '-50%'
+            '--tw-translate-x': '-50%',
+            '--tw-translate-y': '-50%'
         },
         '.inset-x-center': {
             'left': '50%',
-            '--transform-translate-x': '-50%'
+            '--tw-translate-x': '-50%'
         },
         '.inset-y-center': {
             'top': '50%',
-            '--transform-translate-y': '-50%'
+            '--tw-translate-y': '-50%'
         }
     };
 

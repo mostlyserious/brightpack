@@ -3,23 +3,23 @@ const plugin = require('tailwindcss/plugin');
 module.exports = plugin(({ addUtilities, variants }) => {
     const utilities = {
         '.filter': {
-            '--filter-blur': '0',
-            '--filter-brightness': '1',
-            '--filter-contrast': '100%',
-            '--filter-grayscale': '0',
-            '--filter-hue-rotate': '0',
-            '--filter-invert': '0',
-            '--filter-saturate': '100%',
-            '--filter-sepia': '0',
+            '--tw-blur': '0',
+            '--tw-brightness': '1',
+            '--tw-contrast': '100%',
+            '--tw-grayscale': '0',
+            '--tw-hue-rotate': '0',
+            '--tw-invert': '0',
+            '--tw-saturate': '100%',
+            '--tw-sepia': '0',
             'filter': [
-                'blur(var(--filter-blur))',
-                'brightness(var(--filter-brightness))',
-                'contrast(var(--filter-contrast))',
-                'grayscale(var(--filter-grayscale))',
-                'hue-rotate(var(--filter-hue-rotate))',
-                'invert(var(--filter-invert))',
-                'saturate(var(--filter-saturate))',
-                'sepia(var(--filter-sepia))'
+                'blur(var(--tw-blur))',
+                'brightness(var(--tw-brightness))',
+                'contrast(var(--tw-contrast))',
+                'grayscale(var(--tw-grayscale))',
+                'hue-rotate(var(--tw-hue-rotate))',
+                'invert(var(--tw-invert))',
+                'saturate(var(--tw-saturate))',
+                'sepia(var(--tw-sepia))'
             ].join(' ')
         }
     };
@@ -150,7 +150,7 @@ module.exports = plugin(({ addUtilities, variants }) => {
             const value = options[key];
 
             utilities[`.${filter}-${key}`] = {
-                [`--filter-${filter}`]: value
+                [`--tw-${filter}`]: value
             };
         }
     }
