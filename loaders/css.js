@@ -4,10 +4,7 @@ module.exports = {
     test: /\.(post)?css$/,
     use: [
         global.inProduction ? {
-            loader: MiniCssExtractPlugin.loader,
-            options: {
-                esModule: true
-            }
+            loader: MiniCssExtractPlugin.loader
         } : {
             loader: 'style-loader'
         },
