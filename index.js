@@ -28,6 +28,7 @@ module.exports = (args = {}, extend = c => c) => {
     return (env, { mode }) => {
         args.port = args.port || 8888;
         args.mode = mode || 'production';
+        args.source = args.source || 'src';
         args.publicPath = args.publicPath || `/${args.dest || 'dist'}/`;
         args.filename = args.filename || '[name].[contenthash:7]';
 
@@ -121,7 +122,9 @@ module.exports = (args = {}, extend = c => c) => {
                 generate(seed, files, entrypoints) {
                     files.forEach(file => {
                         if (file.isAsset) {
-                            seed[file.name] = file.path;
+                            const src = new RegExp(`^/?${args.source}/?`);
+
+                            seed[file.name.replace(src, '')] = file.path;
                         }
                     });
 
