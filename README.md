@@ -1,3 +1,63 @@
+## Migrating from 4.x
+
+### Dependencies
+**1.)** Update `brightpack` reference in package.json to `ssh://git@github.com:mostlyserious/brightpack.git#next`
+
+**2.)** Install new dependencies.
+```bash
+npm i tailwindcss @tailwindcss/jit postcss postcss-import --save-dev
+```
+or
+```bash
+yarn add tailwindcss @tailwindcss/jit postcss postcss-import --dev
+```
+
+### Config
+
+Update `postcss.config.js` to use `@tailwindcss/jit` instead of `tailwindcss`.
+
+There is currently an issue with HMR and multiple entries.  
+In `webpack.config.js` move `path.resolve('src/css/utilities.css')` to the `app` entry array and remove `utilities`.
+```diff
+config.entry = {
+    app: [
+        path.resolve('src/js/main.js'),
+        path.resolve('src/css/main.css'),
++        path.resolve('src/css/utilities.css'),
+        ...assets.map(p => path.resolve(p))
+    ]
+-    utilities: [
+-        path.resolve('src/css/utilities.css')
+-    ]
+};
+```
+
+Add the Webpack 5.x config to `webpack.config.js`
+```js
+config.cache = {
+    type: 'filesystem',
+    name: global.inProduction ? 'prod' : 'dev',
+    cacheDirectory: path.resolve(__dirname, '.cache/webpack'),
+    buildDependencies: {
+        config: [ __filename ]
+    }
+};
+```
+Any loader rules for `raw-loader` should be updated to use Webpack's new [Assets Modules](https://webpack.js.org/guides/asset-modules).
+```diff
+config.module.rules.push({
+    test: /\.svg$/,
+    include: /\/icons?\//,
++    type: 'asset/source'
+-    use: [ 'raw-loader' ]
+});
+```
+
+### Misc
+* You may remove the `variants` property from your `tailwind.config.js` file.
+* Make sure **all** of your CSS is defined in one of [TailwindCSS's layers](https://tailwindcss.com/docs/functions-and-directives#layer).
+
+
 ## Required Files
 
 ##### webpack.config.js
