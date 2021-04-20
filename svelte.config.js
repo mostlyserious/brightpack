@@ -1,10 +1,11 @@
 const path = require('path');
 const sass = require('node-sass');
-const postcss = require('postcss');
 const sassOptions = require('./sass.config');
 const postcssload = require('postcss-load-config');
 const postcssrc = postcssload(process.cwd());
 const requireOptional = require('./lib/require-optional');
+
+const postcss = requireOptional('postcss');
 
 let { preprocess, ...svelteOptions } = requireOptional(path.join(process.cwd(), 'svelte.config.js')) || {};
 
@@ -28,7 +29,7 @@ module.exports = {
         async style(input) {
             input = preprocess.style ? preprocess.style(input) : input;
 
-            if (!input.attributes.type || [ 'text/postcss', 'text/css' ].includes(input.attributes.type)) {
+            if (postcss && (!input.attributes.type || [ 'text/postcss', 'text/css' ].includes(input.attributes.type))) {
                 const { plugins } = await postcssrc;
                 const result = await postcss(plugins).process((input.code || input.content), {
                     from: 'src',
