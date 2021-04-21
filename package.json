@@ -1,6 +1,6 @@
 {
   "name": "brightpack",
-  "version": "5.2.2",
+  "version": "5.2.3",
   "description": "🔄 Reasonable Webpack config boilerplate.",
   "repository": "corneliusio/brightpack",
   "license": "MIT",
@@ -19,6 +19,7 @@
     "@babel/plugin-transform-react-jsx": "^7.12.7",
     "@babel/preset-env": "^7.12.7",
     "adm-zip": "^0.5.1",
+    "autoprefixer": "^10.2.5",
     "axios": "^0.21.0",
     "babel-eslint": "^10.1.0",
     "babel-loader": "^8.2.2",
@@ -43,7 +44,12 @@
     "moment-locales-webpack-plugin": "^1.2.0",
     "node-object-hash": "^2.1.0",
     "node-sass": "^5.0.0",
+    "postcss": "^8.2.10",
+    "postcss-functions": "^4.0.2",
+    "postcss-import": "^14.0.1",
     "postcss-load-config": "^3.0.1",
+    "postcss-loader": "^5.2.0",
+    "postcss-preset-env": "^6.7.0",
     "raw-loader": "^4.0.2",
     "rfg-api": "^0.5.1",
     "sass": "^1.29.0",
@@ -53,6 +59,7 @@
     "svelte-loader": "^3.0.0",
     "svgo": "^2.3.0",
     "svgo-loader": "^3.0.0",
+    "tailwindcss": "^2.1.1",
     "terser-webpack-plugin": "^5.0.3",
     "tinify-loader": "^1.0.0",
     "tiny-glob": "^0.2.8",
@@ -64,6 +71,7 @@
     "webpack-manifest-plugin": "^3.0.0"
   },
   "resolutions": {
+    "postcss": "^8.2.0",
     "lodash": "^4.17.15"
   }
 }
