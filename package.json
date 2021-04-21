@@ -52,7 +52,6 @@
     "svelte-loader": "^3.0.0",
     "svgo": "^2.3.0",
     "svgo-loader": "^3.0.0",
-    "tailwindcss": "^2.1.1",
     "terser-webpack-plugin": "^5.0.3",
     "tinify-loader": "^1.0.0",
     "tiny-glob": "^0.2.8",
