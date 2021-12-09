@@ -1,12 +1,9 @@
 module.exports = {
     test: /\/media\//,
-    use: [
-        {
-            loader: 'file-loader',
-            options: {
-                name: '[name].[ext]',
-                outputPath: 'media/'
-            }
-        }
-    ]
+    type: 'asset/resource',
+    generator: {
+        filename: global.inProduction
+            ? `media/${global.args.filename}[ext]`
+            : 'media/[name][ext]'
+    }
 };

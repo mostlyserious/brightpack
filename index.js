@@ -8,12 +8,12 @@ const editLoader = require('./util/edit-loader');
 const removePlugin = require('./util/remove-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const requireOptional = require('./lib/require-optional');
-const ManifestPlugin = require('webpack-manifest-plugin');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { NamedModulesPlugin, HotModuleReplacementPlugin } = webpack;
+const { HotModuleReplacementPlugin } = webpack;
 const { default: CssoWebpackPlugin } = require('csso-webpack-plugin');
-const RemoveEmptyEntriesPlugin = require('./lib/remove-empty-entries-plugin');
+// const RemoveEmptyEntriesPlugin = require('./lib/remove-empty-entries-plugin');
 
 try {
     (env => Object.keys(env).forEach(key => {
@@ -28,6 +28,7 @@ module.exports = (args = {}, extend = c => c) => {
     return (env, { mode }) => {
         args.port = args.port || 8888;
         args.mode = mode || 'production';
+        args.source = args.source || 'src';
         args.publicPath = args.publicPath || `/${args.dest || 'dist'}/`;
         args.filename = args.filename || '[name].[contenthash:7]';
 
@@ -36,12 +37,12 @@ module.exports = (args = {}, extend = c => c) => {
         process.env.APP_URL = process.env.APP_URL || `http://${process.env.APP_HOST}`;
 
         global.inProduction = args.mode === 'production';
+        global.args = args;
 
         let base = {
             target: 'web',
             context: process.cwd(),
             mode: args.mode,
-            watch: !global.inProduction,
             stats: {
                 moduleTrace: false,
                 hash: false,
@@ -61,8 +62,8 @@ module.exports = (args = {}, extend = c => c) => {
             filename: path.join(base.name, global.inProduction ? `js/${args.filename}.js` : 'js/[name].js'),
             path: args.dest ? path.resolve(args.dest) : args.dest,
             publicPath: global.inProduction ? args.publicPath : `${process.env.APP_URL}:${args.port}/`,
-            hotUpdateChunkFilename: path.join(base.name, 'hmr/[id].[hash:7].hot-update.js'),
-            hotUpdateMainFilename: path.join(base.name, 'hmr/[hash:7].hot-update.json')
+            hotUpdateChunkFilename: path.join(base.name, 'hmr/[id].[fullhash].hot-update.js'),
+            hotUpdateMainFilename: path.join(base.name, 'hmr/[runtime].[fullhash].hot-update.json')
         };
 
         base.resolve = {
@@ -88,7 +89,14 @@ module.exports = (args = {}, extend = c => c) => {
                 cloneDeep(require('./loaders/svelte')),
                 cloneDeep(requireOptional('eslint')
                     ? require('./loaders/eslint')
-                    : null)
+                    : null),
+                {
+                    test: /svelte\/.*\.mjs$/,
+                    type: 'javascript/auto',
+                    resolve: {
+                        fullySpecified: false
+                    }
+                }
             ].filter(Boolean)
         };
 
@@ -108,20 +116,22 @@ module.exports = (args = {}, extend = c => c) => {
         });
 
         base.plugins = [
-            new ManifestPlugin({
+            new WebpackManifestPlugin({
                 fileName: 'assets.json',
                 writeToFileEmit: true,
                 generate(seed, files, entrypoints) {
                     files.forEach(file => {
                         if (file.isAsset) {
-                            seed[file.name] = file.path;
+                            const src = new RegExp(`^/?${args.source}/?`);
+
+                            seed[file.name.replace(src, '')] = file.path;
                         }
                     });
 
                     return seed;
                 }
             }),
-            new ManifestPlugin({
+            new WebpackManifestPlugin({
                 fileName: 'entries.json',
                 writeToFileEmit: true,
                 generate(seed, files, entrypoints) {
@@ -153,13 +163,14 @@ module.exports = (args = {}, extend = c => c) => {
         }
 
         if (global.inProduction) {
-            base.devtool = 'none';
+            base.devtool = undefined;
 
             base.output.chunkFilename = path.join(base.name, `js/${args.filename}.js`);
             base.output.sourceMapFilename = path.join(base.name, `${args.filename}.map`);
 
             base.optimization = {
                 removeAvailableModules: false,
+                removeEmptyChunks: true,
                 splitChunks: {
                     chunks: 'all',
                     minChunks: 2,
@@ -174,7 +185,7 @@ module.exports = (args = {}, extend = c => c) => {
                 },
                 minimizer: [
                     new TerserPlugin({
-                        cache: path.resolve('.cache/terser')
+
                     }),
                     new CssoWebpackPlugin({
                         comments: false
@@ -187,10 +198,10 @@ module.exports = (args = {}, extend = c => c) => {
                 chunkFilename: path.join(base.name, `css/${args.filename}.css`)
             }));
 
-            base.plugins.push(new RemoveEmptyEntriesPlugin());
+            // base.plugins.push(new RemoveEmptyEntriesPlugin());
             base.plugins.push(new CleanWebpackPlugin({ verbose: false }));
         } else {
-            base.devtool = 'cheap-module-eval-source-map';
+            base.devtool = 'eval-cheap-module-source-map';
 
             base.output.chunkFilename = path.join(base.name, 'js/[name].js');
             base.output.sourceMapFilename = path.join(base.name, '[name].map');
@@ -199,13 +210,12 @@ module.exports = (args = {}, extend = c => c) => {
                 splitChunks: { name: chunkName(args.chunkNameLength || 3) }
             };
 
-            base.plugins.push(new NamedModulesPlugin());
             base.plugins.push(new HotModuleReplacementPlugin());
         }
 
         return global.inProduction
             ? extend(base)
-            : hmr(extend(base), args);
+            : hmr(extend(base));
     };
 };
 

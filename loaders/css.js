@@ -1,3 +1,4 @@
+const requireOptional = require('../lib/require-optional');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
@@ -14,11 +15,11 @@ module.exports = {
                 sourceMap: false
             }
         },
-        {
+        requireOptional('postcss-loader') ? {
             loader: 'postcss-loader',
             options: {
                 sourceMap: false
             }
-        }
+        } : null
     ].filter(Boolean)
 };
