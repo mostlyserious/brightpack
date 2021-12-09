@@ -8,7 +8,7 @@ module.exports = {
         parser: 'babel-eslint',
         sourceType: 'module',
         allowImportExportEverywhere: true,
-        ecmaVersion: 2018,
+        ecmaVersion: 2020,
         ecmaFeatures: {
             impliedStrict: true
         }
