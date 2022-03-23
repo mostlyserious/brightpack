@@ -389,11 +389,6 @@ Build caching is configured by default.
 
 All of the loaders needed for CSS compilation have been included and configured out of the box. Nothing special going on, just basic requirements.
 
-#### SASS
-[sass-loader](https://github.com/webpack-contrib/sass-loader)
-
-A little configuration to have SASS imports work the same as webpack imports.
-
 #### LESS
 [less-loader](https://github.com/webpack-contrib/less-loader)
 

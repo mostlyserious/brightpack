@@ -1,6 +1,4 @@
 const path = require('path');
-const sass = require('node-sass');
-const sassOptions = require('./sass.config');
 const postcssload = require('postcss-load-config');
 const postcssrc = postcssload(process.cwd());
 const requireOptional = require('./lib/require-optional');
@@ -34,17 +32,6 @@ module.exports = {
                 const result = await postcss(plugins).process((input.code || input.content), {
                     from: 'src',
                     map: { inline: false }
-                });
-
-                return {
-                    code: result.css,
-                    map: result.map
-                };
-            } else if (input.attributes.type === 'text/scss') {
-                const result = await sass.render({
-                    ...sassOptions,
-                    data: (input.code || input.content),
-                    sourceMap: false
                 });
 
                 return {

@@ -78,7 +78,6 @@ module.exports = (args = {}, extend = c => c) => {
                 cloneDeep(require('./loaders/vue')),
                 cloneDeep(require('./loaders/babel')),
                 cloneDeep(require('./loaders/css')),
-                cloneDeep(require('./loaders/sass')),
                 cloneDeep(require('./loaders/less')),
                 cloneDeep(require('./loaders/image')),
                 cloneDeep(require('./loaders/media')),
