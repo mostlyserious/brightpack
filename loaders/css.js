@@ -12,13 +12,13 @@ module.exports = {
         {
             loader: 'css-loader',
             options: {
-                sourceMap: false
+                sourceMap: true
             }
         },
         requireOptional('postcss-loader') ? {
             loader: 'postcss-loader',
             options: {
-                sourceMap: false
+                sourceMap: true
             }
         } : null
     ].filter(Boolean)
