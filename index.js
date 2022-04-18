@@ -11,7 +11,6 @@ const requireOptional = require('./lib/require-optional');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { HotModuleReplacementPlugin } = webpack;
 const { default: CssoWebpackPlugin } = require('csso-webpack-plugin');
 // const RemoveEmptyEntriesPlugin = require('./lib/remove-empty-entries-plugin');
 
@@ -201,8 +200,6 @@ module.exports = (args = {}, extend = c => c) => {
             base.optimization = {
                 splitChunks: { name: chunkName(args.chunkNameLength || 3) }
             };
-
-            base.plugins.push(new HotModuleReplacementPlugin());
         }
 
         return global.inProduction
