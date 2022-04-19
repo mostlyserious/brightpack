@@ -3,18 +3,13 @@ const plugin = require('tailwindcss/plugin');
 module.exports = plugin(({ addUtilities, variants }) => {
     const utilities = {
         '.inset-center': {
-            'top': '50%',
-            'left': '50%',
-            '--tw-translate-x': '-50%',
-            '--tw-translate-y': '-50%'
+            '@apply top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2': false
         },
         '.inset-x-center': {
-            'left': '50%',
-            '--tw-translate-x': '-50%'
+            '@apply left-1/2 -translate-x-1/2': false
         },
         '.inset-y-center': {
-            'top': '50%',
-            '--tw-translate-y': '-50%'
+            '@apply top-1/2 -translate-y-1/2': false
         }
     };
 

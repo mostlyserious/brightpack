@@ -1,6 +1,16 @@
 const plugin = require('tailwindcss/plugin');
 
-module.exports = plugin(({ matchUtilities, addComponents, addUtilities, theme }) => {
+module.exports = plugin(({ matchUtilities, addComponents, addUtilities, addBase, theme }) => {
+    addBase({
+        ':root': {
+            '--parallax-perspective': '100vh',
+            '--parallax-control': '0',
+            '--parallax-x': '0px',
+            '--parallax-y': '0px',
+            '--parallax-z': '0px'
+        }
+    });
+
     matchUtilities({
         'perspective': value => ({
             '--parallax-perspective': value
