@@ -11,7 +11,10 @@ module.exports = plugin(({ addUtilities, variants }) => {
     };
 
     const units = [
-        'vh', 'vw', 'vmin', 'vmax'
+        'vh', 'vw', 'vmin', 'vmax',
+        'svh', 'svw', 'svmin', 'svmax',
+        'lvh', 'lvw', 'lvmin', 'lvmax',
+        'dvh', 'dvw', 'dvmin', 'dvmax'
     ];
 
     const viewportSizes = [
