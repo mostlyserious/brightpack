@@ -10,7 +10,7 @@ module.exports = {
             loader: 'sass-loader',
             options: {
                 sassOptions,
-                sourceMap: false,
+                sourceMap: true,
                 webpackImporter: false
             }
         }

@@ -11,7 +11,6 @@ const requireOptional = require('./lib/require-optional');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { HotModuleReplacementPlugin } = webpack;
 const { default: CssoWebpackPlugin } = require('csso-webpack-plugin');
 // const RemoveEmptyEntriesPlugin = require('./lib/remove-empty-entries-plugin');
 
@@ -67,7 +66,7 @@ module.exports = (args = {}, extend = c => c) => {
         };
 
         base.resolve = {
-            extensions: [ '.wasm', '.mjs', '.js', '.jsx', '.json' ],
+            extensions: [ '.mjs', '.js', '.jsx', '.svelte' ],
             alias: { '@': path.resolve(process.cwd(), 'src') }
         };
 
@@ -86,10 +85,8 @@ module.exports = (args = {}, extend = c => c) => {
                 cloneDeep(require('./loaders/svgo')),
                 cloneDeep(require('./loaders/font')),
                 cloneDeep(require('./loaders/raw')),
+                cloneDeep(require('./loaders/icons')),
                 cloneDeep(require('./loaders/svelte')),
-                cloneDeep(requireOptional('eslint')
-                    ? require('./loaders/eslint')
-                    : null),
                 {
                     test: /svelte\/.*\.mjs$/,
                     type: 'javascript/auto',
@@ -103,12 +100,6 @@ module.exports = (args = {}, extend = c => c) => {
         editLoader(base, 'babel-loader', (loader, rule) => {
             loader.options.envName = base.name;
             loader.options.cacheDirectory = `${loader.options.cacheDirectory}/${base.name}`;
-        });
-
-        editLoader(base, 'file-loader', (loader, rule) => {
-            if (rule.test.toString() !== '/\\/media\\//') {
-                loader.options.name = global.inProduction ? `${args.filename}.[ext]` : '[name].[ext]';
-            }
         });
 
         editLoader(base, 'vue-loader', (loader, rule) => {
@@ -201,7 +192,7 @@ module.exports = (args = {}, extend = c => c) => {
             // base.plugins.push(new RemoveEmptyEntriesPlugin());
             base.plugins.push(new CleanWebpackPlugin({ verbose: false }));
         } else {
-            base.devtool = 'eval-cheap-module-source-map';
+            base.devtool = 'eval-source-map';
 
             base.output.chunkFilename = path.join(base.name, 'js/[name].js');
             base.output.sourceMapFilename = path.join(base.name, '[name].map');
@@ -209,8 +200,6 @@ module.exports = (args = {}, extend = c => c) => {
             base.optimization = {
                 splitChunks: { name: chunkName(args.chunkNameLength || 3) }
             };
-
-            base.plugins.push(new HotModuleReplacementPlugin());
         }
 
         return global.inProduction

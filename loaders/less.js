@@ -7,7 +7,7 @@ module.exports = {
         ...use,
         {
             loader: 'less-loader',
-            options: { sourceMap: false }
+            options: { sourceMap: true }
         }
     ]
 };

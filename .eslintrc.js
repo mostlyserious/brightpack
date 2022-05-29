@@ -1,7 +1,4 @@
-const fs = require('fs');
 const path = require('path');
-const __home = process.env.HOME || process.env.HOMEPATH || process.env.USERPROFILE;
-const extend = path.resolve(__home, '.eslintrc.json');
 
 module.exports = {
     parserOptions: {
@@ -14,6 +11,6 @@ module.exports = {
         }
     },
     extends: [
-        fs.existsSync(extend) ? extend : null
-    ].filter(Boolean)
+        path.resolve(__dirname, 'eslintrc.json')
+    ]
 };
