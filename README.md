@@ -2,11 +2,11 @@
 ## Dependencies
 Install dependencies.
 ```bash
-npm i @mostlyserious/brightpack tailwindcss postcss postcss-functions postcss-import postcss-preset-env --save-dev
+npm i @mostlyserious/brightpack tailwindcss @tailwindcss/typography --save-dev
 ```
 or
 ```bash
-yarn add @mostlyserious/brightpack tailwindcss postcss postcss-functions postcss-import postcss-preset-env --dev
+yarn add @mostlyserious/brightpack tailwindcss @tailwindcss/typography --dev
 ```
 
 ## Config

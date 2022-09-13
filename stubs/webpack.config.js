@@ -12,7 +12,7 @@ const watch = [
 ];
 
 module.exports = brightpack({ dest, publicPath, watch }, config => {
-    const assets = glob('assets/{img,font,media}/**.*');
+    const assets = glob('src/{img,font,media}/**.*');
 
     brightpack.editLoader(config, 'babel-loader', (use, rule) => {
 
@@ -20,8 +20,8 @@ module.exports = brightpack({ dest, publicPath, watch }, config => {
 
     config.entry = {
         app: [
-            path.resolve('assets/js/main.js'),
-            path.resolve('assets/css/main.css'),
+            path.resolve('src/js/main.js'),
+            path.resolve('src/css/main.css'),
             ...assets.map(p => path.resolve(p))
         ]
     };
