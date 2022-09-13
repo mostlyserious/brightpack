@@ -1,330 +1,315 @@
-## Migrating from 4.x
 
-### Dependencies
-**1.)** Update `brightpack` reference in package.json to `ssh://git@github.com:mostlyserious/brightpack.git#next`
-
-**2.)** Install new dependencies.
+## Dependencies
+Install dependencies.
 ```bash
-npm i tailwindcss @tailwindcss/jit postcss postcss-import --save-dev
+npm i @mostlyserious/brightpack tailwindcss postcss postcss-functions postcss-import postcss-preset-env --save-dev
 ```
 or
 ```bash
-yarn add tailwindcss @tailwindcss/jit postcss postcss-import --dev
+yarn add @mostlyserious/brightpack tailwindcss postcss postcss-functions postcss-import postcss-preset-env --dev
 ```
 
-### Config
+## Config
+Run `brightpack init` to bootstrap all of the necessary config files.
+- .browserslistrc
+- .env
+- .eslintrc.js
+- babel.config.js
+- postcss.config.js
+- tailwind.config.js
+- webpack.config.js
 
-Update `postcss.config.js` to use `@tailwindcss/jit` instead of `tailwindcss`.
+## package.json Script
 
-There is currently an issue with HMR and multiple entries.  
-In `webpack.config.js` move `path.resolve('src/css/utilities.css')` to the `app` entry array and remove `utilities`.
-```diff
-config.entry = {
-    app: [
-        path.resolve('src/js/main.js'),
-        path.resolve('src/css/main.css'),
-+        path.resolve('src/css/utilities.css'),
-        ...assets.map(p => path.resolve(p))
-    ]
--    utilities: [
--        path.resolve('src/css/utilities.css')
--    ]
-};
-```
+Add the following scripts to your package.json
 
-Add the Webpack 5.x config to `webpack.config.js`
-```js
-config.cache = {
-    type: 'filesystem',
-    name: global.inProduction ? 'prod' : 'dev',
-    cacheDirectory: path.resolve(__dirname, '.cache/webpack'),
-    buildDependencies: {
-        config: [ __filename ]
+```json
+{
+    "scripts": {
+        "dev": "webpack --mode=development --watch",
+        "build": "webpack --mode=production"
     }
-};
-```
-Any loader rules for `raw-loader` should be updated to use Webpack's new [Assets Modules](https://webpack.js.org/guides/asset-modules).
-```diff
-config.module.rules.push({
-    test: /\.svg$/,
-    include: /\/icons?\//,
-+    type: 'asset/source'
--    use: [ 'raw-loader' ]
-});
+}
 ```
 
-### Misc
-* You may remove the `variants` property from your `tailwind.config.js` file.
-* Make sure **all** of your CSS is defined in one of [TailwindCSS's layers](https://tailwindcss.com/docs/functions-and-directives#layer).
+## External Config
 
+### API Keys for Our Custom Build Tool
 
-## Required Files
+Our current build system requires API keys to tie into existing services. To set these up, navigate to these two URLs and use your email to generate a new API keys. 
 
-##### webpack.config.js
+- [https://realfavicongenerator.net/api](https://realfavicongenerator.net/api/)
+- [https://tinypng.com/developer](https://tinypng.com/developers)
 
-```js
-const path = require('path');
-const glob = require('tiny-glob/sync');
-const brightpack = require('brightpack');
-const PurgecssPlugin = require('purgecss-webpack-plugin');
-const RealFaviconPlugin = require('brightpack/lib/real-favicon-plugin');
+Once you have these keys, you will create two hidden files in your home directory, `.realfavicon` and `.tinypng`. Paste each API key into its respective file with no other content. You're all set!
 
-const dest = 'public/assets';
-const publicPath = '/assets/';
-const watch = [ '*.php', 'views/**/*.php', 'app/**/*.php' ];
+## Required Back-end Utility (for Craft CMS)
 
-module.exports = brightpack({ dest, publicPath, watch }, config => {
-    // `config` is just a pre-configured webpack config object with sensible defaults, nothing more.
-    // Project specific values are then configured below.
-
-    // Miscellaneous files that need to be processed and available in the template
-    // such as images, fonts, or other media like PDFs or videos.
-    const assets = glob('src/{img,font,media}/**.*');
-
-    config.entry = {
-        app: [
-            path.resolve('src/js/main.js'),
-            path.resolve('src/css/main.css'),
-            ...assets.map(p => path.resolve(p))
-        ],
-        utilities: path.resolve('src/css/utilities.css')
-    };
-
-    config.plugins.push(new RealFaviconPlugin({
-        filename: global.inProduction
-            ? 'favicon/[name].[contenthash:7]'
-            : 'favicon/[name]',
-        config: path.resolve('src/favicon/config.json')
-    }));
-
-    if (global.inProduction) {
-        // Not necessary, but allows you to see how much of your final javascript
-        // is polyfills for browser support. Will be reflective of modern
-        // javascript used and required browser support in .browserslistrc
-        config.optimization.splitChunks.cacheGroups.polyfill = {
-            name: 'polyfill',
-            test: /\/core-js\//,
-            chunks: 'all',
-            enforce: true
-        };
-
-        // Removed unused CSS classes from the tailwind utilities stylesheet.
-        config.plugins.push(new PurgecssPlugin({
-            // Only runs on the utilites entry configured above.
-            only: [
-                'utilities'
-            ],
-            // All the locations that CSS classes may be used.
-            paths: () => [
-                glob('views/**/*.php'),
-                glob('src/js/**/*.{js,svelte}')
-            ].flat(),
-            extractors: [
-                {
-                    // similar to previous above config but simply filtering by extension.
-                    extensions: [ 'svelte', 'html', 'php' ],
-                    // Defines what characters can actually be part of a class name.
-                    // This is explicitly set for some extra, unconventional
-                    // (but perfectly valid) characters used in tailwind.
-                    extractor: content => content.match(/[A-Za-z0-9-_:/]+/g) || []
-                }
-            ]
-        }));
-    }
-
-    // returns the finished configuration to webpack.
-    return config;
-});
-```
-
-##### helpers.php
+#### BrightpackTwigExtensions.php 
 
 ```php
-function entry($entry = null, $markup = false, $manifest = 'public/assets/entries.json')
+<?php
+
+namespace Modules\TwigHelpers\TwigExtensions;
+
+use Craft;
+use Twig\TwigFunction;
+use Twig\Extension\AbstractExtension;
+
+class BrightpackTwigExtensions extends AbstractExtension
 {
-    static $all;
-
-    $results = [];
-    $manifest_path = join_path(__DIR__, $manifest);
-
-    if (!is_file($manifest_path)) {
-        return $markup ? '' : [];
+    /**
+     * @inheritdoc
+     */
+    public function getName()
+    {
+        return 'Brightpack';
     }
 
-    $all = $all ?: json_decode(file_get_contents($manifest_path), true);
-
-    if (!$entry) {
-        return $all;
+    /**
+     * @inheritdoc
+     */
+    public function getFunctions()
+    {
+        return [
+            new TwigFunction('entry', [$this, 'entry'], [
+                'is_safe' => ['html']
+            ]),
+            new TwigFunction('asset', [$this, 'asset'], [
+                'is_safe' => ['html']
+            ]),
+            new TwigFunction('external', [$this, 'external'], [
+                'is_safe' => ['html']
+            ])
+        ];
     }
 
-    if (!isset($all[$entry])) {
-        return [];
-    }
+    /**
+     * Returns versioned file(s) or the entire tag.
+     *
+     * @param  string     $file
+     * @param  bool       $markup   (optional)
+     * @param  bool       $manifest (optional)
+     * @param  null|mixed $entry
+     * @return string
+     */
+    public function entry($entry = null, $markup = true, $manifest = 'web/static/entries.json')
+    {
+        static $all;
 
-    foreach ($all[$entry] as $i => $value) {
-        $ext = pathinfo($value, PATHINFO_EXTENSION);
+        $results = [];
+        $manifest_path = $this->join_path(CRAFT_BASE_PATH, $manifest);
 
-        switch ($ext) {
-            case 'js' :
-                $result = $markup ? sprintf(
-                    '<script src="%s" %s async defer></script>',
-                    $value,
-                    is_array($markup) ? attr($markup, ['media']) : ''
-                ) : $value;
-                break;
-
-            case 'css' :
-                $result = $markup ? sprintf(
-                    '<link href="%s" rel="stylesheet" %s>',
-                    $value,
-                    is_array($markup) ? attr($markup) : ''
-                ) : $value;
-                break;
-            default :
-                $result = '';
-                break;
+        if (!is_file($manifest_path)) {
+            return $markup ? '' : [];
         }
 
-        preload($value);
+        $all = $all ?: json_decode(file_get_contents($manifest_path), true);
 
-        $results[] = $result;
-    }
-
-    return $markup ? implode(PHP_EOL, $results) : $results;
-}
-
-function asset($entry = null, $markup = false, $manifest = 'public/assets/assets.json')
-{
-    static $all;
-
-    $manifest_path = join_path(__DIR__, $manifest);
-
-    if (!is_file($manifest_path)) {
-        return $markup ? '' : [];
-    }
-
-    $all = $all ?: json_decode(file_get_contents($manifest_path), true);
-
-    if (!$entry) {
-        return $all;
-    }
-
-    if (isset($all[$entry])) {
-        if (pathinfo($all[$entry], PATHINFO_EXTENSION) !== 'html') {
-            preload($all[$entry]);
+        if (!$entry) {
+            return $all;
         }
 
-        return $all[$entry];
-    }
-
-    return null;
-}
-
-function preload($resource)
-{
-    static $pushed = [];
-
-    if (!is_array($resource)) {
-        $resource = [$resource];
-    }
-
-    foreach ($resource as $r) {
-        $types = ['css' => 'style', 'js' => 'script'];
-        $ext = pathinfo($r, PATHINFO_EXTENSION);
-        $as = isset($types[$ext]) ? $types[$ext] : 'image';
-        if (!in_array($r, $pushed)) {
-            header(sprintf('Link: <%s>; as=%s; rel=preload;', url($r), $as), false);
-            $pushed[] = $r;
+        if (!isset($all[$entry])) {
+            return [];
         }
+
+        foreach ($all[$entry] as $i => $value) {
+            $ext = pathinfo($value, PATHINFO_EXTENSION);
+
+            switch ($ext) {
+                case 'js' :
+                    $result = $markup ? sprintf(
+                        '<script src="%s" %s async defer></script>',
+                        $value,
+                        is_array($markup) ? $this->attr($markup, ['media']) : ''
+                    ) : $value;
+                    break;
+
+                case 'css' :
+                    $result = $markup ? sprintf(
+                        '<link href="%s" rel="stylesheet" %s>',
+                        $value,
+                        is_array($markup) ? $this->attr($markup) : ''
+                    ) : $value;
+                    break;
+                default :
+                    $result = '';
+                    break;
+            }
+
+            $this->preload($value);
+
+            $results[] = $result;
+        }
+
+        return $markup ? implode(PHP_EOL, $results) : $results;
     }
 
-    return $resource;
-}
+    /**
+     * Returns versioned file(s) or the entire tag.
+     *
+     * @param  string     $file
+     * @param  bool       $markup   (optional)
+     * @param  bool       $manifest (optional)
+     * @param  null|mixed $entry
+     * @return string
+     */
+    public function asset($entry = null, $markup = true, $manifest = 'web/static/assets.json')
+    {
+        static $all;
 
-function attr($attributes = [], $except = [])
-{
-    $html = [];
+        $manifest_path = $this->join_path(CRAFT_BASE_PATH, $manifest);
 
-    foreach ((array) $attributes as $key => $value) {
-        if (!is_null($value)) {
-            if (is_numeric($key)) {
-                if (!in_array($value, (array) $except)) {
-                    $pair = $value;
+        if (!is_file($manifest_path)) {
+            return $markup ? '' : [];
+        }
+
+        $all = $all ?: json_decode(file_get_contents($manifest_path), true);
+
+        if (!$entry) {
+            return $all;
+        }
+
+        if (isset($all[$entry])) {
+            return $all[$entry];
+        }
+
+        return null;
+    }
+
+    public function external($path)
+    {
+        if (is_readable(Craft::getAlias($path))) {
+            return file_get_contents(Craft::getAlias($path));
+        }
+
+        return '';
+    }
+
+    protected function preload($resource)
+    {
+        static $pushed = [];
+
+        if (!is_array($resource)) {
+            $resource = [$resource];
+        }
+
+        foreach ($resource as $r) {
+            $types = ['css' => 'style', 'js' => 'script'];
+            $ext = pathinfo($r, PATHINFO_EXTENSION);
+            $as = isset($types[$ext]) ? $types[$ext] : 'image';
+            if (!in_array($r, $pushed)) {
+                header(sprintf('Link: <%s>; as=%s; rel=preload;', $this->url($r), $as), false);
+                $pushed[] = $r;
+            }
+        }
+
+        return $resource;
+    }
+
+    protected function attr($attributes = [], $except = [])
+    {
+        $html = [];
+
+        foreach ((array) $attributes as $key => $value) {
+            if (!is_null($value)) {
+                if (is_numeric($key)) {
+                    if (!in_array($value, (array) $except)) {
+                        $pair = $value;
+                    }
+                } else {
+                    if (!in_array($key, (array) $except)) {
+                        $pair = $key .'="'. $value .'"';
+                    }
                 }
+            }
+
+            if (!is_null($pair)) {
+                $html[] = $pair;
+            }
+        }
+
+        return count($html) > 0 ? ' '.implode(' ', $html) : '';
+    }
+
+    protected function join_path(...$paths)
+    {
+        return preg_replace_callback('/([^:])\/+/', function ($matches) {
+            return $matches[1] . '/';
+        }, implode('/', (array) $paths));
+    }
+
+    protected function url($path = '')
+    {
+        $host = parse_url($path, PHP_URL_HOST);
+
+        return trim($host ? $path : $this->join_path(sprintf(
+            '%s://%s',
+            ($this->is_https() ? 'https' : 'http'),
+            $this->request('SERVER_NAME')
+        ), $path), '/');
+    }
+
+    protected function is_https()
+    {
+        if ($this->request('HTTPS')) {
+            if ('on' === strtolower($this->request('HTTPS'))) {
+                return true;
+            }
+            if ('1' === $this->request('HTTPS')) {
+                return true;
+            }
+        } elseif ($this->request('SERVER_PORT') && ('443' === $this->request('SERVER_PORT'))) {
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function request($only = null, $object = true)
+    {
+        $return = null;
+
+        $request = array_merge($_GET, $_POST, $_SERVER);
+
+        if ($only) {
+            if (!is_array($only)) {
+                $return = isset($request[$only]) ? $request[$only] : null;
             } else {
-                if (!in_array($key, (array) $except)) {
-                    $pair = $key .'="'. $value .'"';
+                $return = [];
+
+                foreach ($only as $key) {
+                    $value = isset($request[$key]) ? $request[$key] : null;
+
+                    if ($value) {
+                        $return[$key] = $value;
+                    }
                 }
             }
+        } else {
+            $return = !empty($request) ? $request : null;
         }
 
-        if (!is_null($pair)) {
-            $html[] = $pair;
+        if (!empty($return)) {
+            return ($object && is_array($return)) ? (object) $return : $return;
         }
     }
-
-    return count($html) > 0 ? ' '.implode(' ', $html) : '';
-}
-
-function join_path(...$paths)
-{
-    return preg_replace_callback('/([^:])\/+/', function ($matches) {
-        return $matches[1] . '/';
-    }, implode('/', (array) $paths));
 }
 ```
 
-## Optional (But Recommended) Files
+#### Twig Usage
 
-##### babel.config.js
-
-```js
-module.exports = {
-    plugins: [
-        '@babel/syntax-dynamic-import'
-    ],
-    presets: [
-        [ '@babel/env', {
-            corejs: 3,
-            modules: false,
-            useBuiltIns: 'usage',
-            shippedProposals: true
-        } ]
-    ]
-};
+`entry()` will load a defined Webpack entry. The default entry setup in webpack.config.js is 'app'
+```twig
+<head>
+    {{ entry('app') }}
+</head>
 ```
 
-##### postcss.config.js
-
-```js
-module.exports = {
-    plugins: {
-        'postcss-import': {},
-        'tailwindcss': {},
-        'postcss-functions': {
-            functions: {
-                'svg-uri': value => {
-                    const svg = value
-                        .replace(/^['"]|['"]$/g, '')
-                        .replace(/%/g, '%25')
-                        .replace(/</g, '%3C')
-                        .replace(/>/g, '%3E')
-                        .replace(/&/g, '%26')
-                        .replace(/#/g, '%23')
-                        .replace(/{/g, '%7B')
-                        .replace(/}/g, '%7D');
-
-                    return `url(${JSON.stringify(`data:image/svg+xml;charset=utf-8,${svg}`)})`;
-                }
-            }
-        },
-        'postcss-nesting': {},
-        'postcss-color-function': {},
-        'postcss-preset-env': global.inProduction ? {
-            'autoprefixer': { flexbox: 'no-2009', grid: 'no-autoplace' }
-        } : false
-    }
-};
+`asset()` will output the hashed URL to an optimized asset.
+```twig
+<img src="{{ asset('img/photo.jpg') }}">
 ```
 
 ## Options
@@ -360,7 +345,7 @@ Automatically assigned dependent on the script run (either npm run dev or npm ru
 
 ## What's Included
 
-### Loaders
+## Loaders
 
 #### Vue
 [vue-loader](https://vue-loader.vuejs.org/)
@@ -424,7 +409,7 @@ Compiles Svelte components, but also applies the same configuration as your othe
 
 *If* you have eslint installed for you project, will add it to your webpack config for warning and errors to be displayed in the terminal.
 
-### Plugins
+## Plugins
 
 #### TerserPlugin
 [terser-webpack-plugin](https://github.com/webpack-contrib/terser-webpack-plugin)  

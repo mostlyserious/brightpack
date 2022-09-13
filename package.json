@@ -1,6 +1,6 @@
 {
   "name": "@mostlyserious/brightpack",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "description": "🔄 Reasonable Webpack config boilerplate.",
   "repository": "mostlyserious/brightpack",
   "license": "MIT",
@@ -15,6 +15,9 @@
     "webpack",
     "boilerplate"
   ],
+  "bin": {
+    "brightpack": "./bin/index.js"
+  },
   "main": "index.js",
   "dependencies": {
     "@babel/core": "^7.17.9",
